@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "date": "2026-10-20",
+    "slug": "link-cleaner",
+    "title": "链接净化器 / Link Cleaner",
+    "problem": "分享链接时携带冗长的广告追踪参数",
+    "path": "link-cleaner.html",
+    "category": "数字生活",
+    "test": "node --test test-link-cleaner.mjs"
+  }
+]

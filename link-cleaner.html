@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="在浏览器本地批量移除链接中的常见广告追踪参数，保留功能参数与片段，不上传链接。">
+<meta name="referrer" content="no-referrer">
+<title>链接净化器 · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,textarea{font:inherit}button,a,textarea{outline-offset:5px}header{max-width:1120px;margin:auto;padding:27px 30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;font-size:13px;letter-spacing:.06em}header a{text-decoration:none}.brand{font-weight:750}.edition{color:var(--muted)}main{max-width:1120px;margin:auto;padding:52px 30px}.eyebrow{font-size:12px;letter-spacing:.16em;color:var(--orange);font-weight:750}h1{font-size:clamp(36px,6vw,64px);line-height:1.2;letter-spacing:-.04em;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{max-width:590px;color:var(--muted);margin-bottom:28px}.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:34px}.badge{font-size:12px;border:1px solid var(--line);padding:4px 12px;border-radius:20px}.workspace{border:1px solid var(--line);background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 12px 38px #243b3105}.panels{display:grid;grid-template-columns:1fr 1fr}.panel{padding:24px}.panel+.panel{border-left:1px solid var(--line);background:#f1f4ed}.labelrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.labelrow label{font-weight:700;font-size:14px}.small{font-size:12px;color:var(--muted)}textarea{display:block;width:100%;height:204px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--white);font:14px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--ink);overflow-wrap:anywhere}textarea::placeholder{color:#8a958a}textarea:focus{outline:2px solid var(--ink)}.toolbar{padding:18px 24px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}.button{border:1px solid var(--line);border-radius:8px;padding:10px 17px;cursor:pointer;background:var(--white);color:var(--ink);font-weight:650;font-size:14px}.primary{background:var(--ink);border-color:var(--ink);color:white}.button:hover{filter:brightness(.96)}.button:disabled{opacity:.45;cursor:default}.textbutton{border:0;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;padding:5px;text-decoration:underline;text-underline-offset:3px}.hint{margin-left:auto;font-size:12px;color:var(--muted)}#status{padding:0 24px 18px;font-size:13px;min-height:40px}#details{margin:0;padding:0 24px 20px;list-style:none;font-size:13px;overflow-wrap:anywhere}#details:empty{padding:0}#details li{border-top:1px solid var(--line);padding:10px 0}.error{color:#9e3829}.note{color:var(--muted)}.about{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin:36px 0 24px}.about h2{font-size:14px;margin:0 0 8px}.about p{font-size:13px;color:var(--muted);margin:0}footer{border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:12px}kbd{font:11px ui-monospace,monospace;border:1px solid var(--line);padding:2px 4px;border-radius:4px}@media(max-width:650px){header{padding:20px}.edition{display:none}main{padding:34px 20px}.panels{grid-template-columns:1fr}.panel{padding:18px}.panel+.panel{border-left:0;border-top:1px solid var(--line)}textarea{height:160px}.toolbar{padding:16px 18px}.hint{display:none}.about{grid-template-columns:1fr;gap:20px}footer{flex-direction:column;gap:5px}#status{padding-left:18px}#details{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">001 / DIGITAL EVERYDAY</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main>
+<div class="eyebrow">小工具，解决一个真问题。</div>
+<h1>分享链接，<br>少一点<span>尾巴。</span></h1>
+<p class="intro">把冗长的分享链接变干净。移除常见广告追踪参数，保留搜索内容、商品编号与视频时间点。</p>
+<div class="badges"><span class="badge">● 本地处理</span><span class="badge">无需注册</span><span class="badge">支持批量</span><span class="badge">零依赖 · 可离线</span></div>
+<section class="workspace" aria-label="链接净化工作区">
+<div class="panels">
+<div class="panel"><div class="labelrow"><label for="input">01 / 粘贴原链接</label><button class="textbutton" id="example" type="button">试试示例</button></div><textarea id="input" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="每行一个完整的 http:// 或 https:// 链接" aria-describedby="input-help"></textarea><div class="small" id="input-help">每行一个链接，最多 200 行。</div></div>
+<div class="panel"><div class="labelrow"><label for="output">02 / 复制干净的链接</label><span class="small" id="count">等待输入</span></div><textarea id="output" readonly spellcheck="false" placeholder="净化后的链接会出现在这里。" aria-describedby="output-help"></textarea><div class="small" id="output-help">无法处理的行将原样保留，并在下方标明。</div></div>
+</div>
+<div class="toolbar"><button class="button primary" id="clean" type="button">净化链接 ↗</button><button class="button" id="copy" disabled type="button">复制结果</button><button class="textbutton" id="clear" type="button">清空</button><span class="hint"><kbd>⌘</kbd> / <kbd>Ctrl</kbd> + <kbd>Enter</kbd></span></div>
+<div id="status" role="status" aria-live="polite">链接只在当前浏览器内处理，不会上传。</div><ul id="details" aria-label="处理详情"></ul>
+</section>
+<section class="about" aria-label="清理规则">
+<div><h2>删掉追踪参数</h2><p>识别 utm_*、fbclid、gclid 等常见追踪字段。每次处理都会列出移除的参数。</p></div>
+<div><h2>保留有用的部分</h2><p>保留 q、id、v、t 等功能参数及 #片段；不改动保留下来的参数编码和顺序。</p></div>
+<div><h2>有签名？原样保留</h2><p>识别到签名、令牌或有效期字段时跳过清理。不展开短链，也不保证移除所有追踪。</p></div>
+</section>
+<footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer>
+</main>
+<script id="cleaner-core">
+/* Pure logic; the same source is exercised by test-link-cleaner.mjs. */
+function cleanLink(value) {
+  const original = value.trim();
+  if (!original) return { url: '', removed: [], error: '链接为空。' };
+  if (/\s/.test(original)) return { url: original, removed: [], error: '链接包含空白，请使用完整链接。' };
+  let parsed;
+  try { parsed = new URL(original); } catch { return { url: original, removed: [], error: '不是有效的完整链接。' }; }
+  if (!/^https?:\/\/[^/]/i.test(original) || !['http:', 'https:'].includes(parsed.protocol)) {
+    return { url: original, removed: [], error: '仅支持 http:// 与 https:// 链接。' };
+  }
+  if (parsed.username || parsed.password) return { url: original, removed: [], error: '含登录信息的链接不予处理。' };
+  const protectedKey = /^(?:sig|signature|token|access_token|auth|authorization|auth_key|key|api_key|apikey|expires|expiry|exp|policy|key-pair-id|hmac|hash|s|se|sp|sv|sr|awsaccesskeyid|hdnts|hdnea|__token__)$/i;
+  if ([...parsed.searchParams.keys()].some(key => protectedKey.test(key) || /^x-(?:amz|goog)-/i.test(key))) {
+    return { url: original, removed: [], protected: true };
+  }
+  const hashAt = original.indexOf('#');
+  const fragment = hashAt < 0 ? '' : original.slice(hashAt);
+  const base = hashAt < 0 ? original : original.slice(0, hashAt);
+  const queryAt = base.indexOf('?');
+  if (queryAt < 0) return { url: original, removed: [] };
+  const trackers = /^(?:utm_.+|fbclid|gclid|dclid|gbraid|wbraid|msclkid|twclid|ttclid|igshid|mc_cid|mc_eid|li_fat_id|vero_id|_hsenc|_hsmi)$/i;
+  const removed = [];
+  const kept = base.slice(queryAt + 1).split('&').filter(part => {
+    const rawKey = part.split('=')[0];
+    let key;
+    try { key = decodeURIComponent(rawKey.replace(/\+/g, ' ')); } catch { return true; }
+    if (!trackers.test(key)) return true;
+    removed.push(key);
+    return false;
+  });
+  if (!removed.length) return { url: original, removed: [] };
+  const query = kept.join('&');
+  return { url: base.slice(0, queryAt) + (query ? '?' + query : '') + fragment, removed };
+}
+function cleanBatch(text) {
+  const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  if (lines.length > 200) throw new Error('一次最多处理 200 行，请分批粘贴。');
+  return lines.map(cleanLink);
+}
+</script>
+<script>
+const $ = id => document.getElementById(id);
+const input = $('input'), output = $('output'), copy = $('copy');
+function invalidate() {
+  output.value = ''; copy.disabled = true; $('count').textContent = '等待净化';
+  $('details').replaceChildren(); $('status').textContent = '输入已更新，点击“净化链接”生成结果。';
+}
+function run() {
+  $('details').replaceChildren();
+  let results;
+  try { results = cleanBatch(input.value); } catch (error) {
+    output.value = ''; copy.disabled = true; $('count').textContent = '超出上限'; $('status').textContent = error.message; return;
+  }
+  if (!results.length) { invalidate(); $('status').textContent = '请先粘贴至少一个完整链接。'; return; }
+  output.value = results.map(result => result.url).join('\n'); copy.disabled = false;
+  const removedCount = results.reduce((sum, result) => sum + result.removed.length, 0);
+  const changed = results.filter(result => result.removed.length).length;
+  const errors = results.filter(result => result.error).length;
+  $('count').textContent = results.length + ' 个链接';
+  $('status').textContent = '已净化 ' + changed + ' 个链接，移除 ' + removedCount + ' 个追踪参数。' + (errors ? ' ' + errors + ' 行无法处理，已原样保留。' : '');
+  results.forEach((result, index) => {
+    if (!result.removed.length && !result.error && !result.protected) return;
+    const li = document.createElement('li');
+    li.className = result.error ? 'error' : 'note';
+    li.textContent = '第 ' + (index + 1) + ' 个：' + (result.error || (result.protected ? '检测到签名、令牌或有效期参数，已原样保留。' : '已移除 ' + result.removed.join('、')));
+    $('details').append(li);
+  });
+}
+$('clean').addEventListener('click', run);
+input.addEventListener('input', invalidate);
+input.addEventListener('keydown', event => { if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') { event.preventDefault(); run(); } });
+$('example').addEventListener('click', () => {
+  input.value = 'https://example.com/article?id=42&utm_source=newsletter&utm_medium=email#read\nhttps://www.youtube.com/watch?v=abc123&t=90&utm_campaign=share\nhttps://example.com/download?token=demo&utm_source=email';
+  run();
+});
+$('clear').addEventListener('click', () => { input.value = ''; invalidate(); $('count').textContent = '等待输入'; $('status').textContent = '已清空。链接只在当前浏览器内处理，不会上传。'; input.focus(); });
+copy.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(output.value); $('status').textContent = '已复制，可以分享了。'; }
+  catch { output.focus(); output.select(); $('status').textContent = '浏览器暂不允许自动复制，结果已选中，请按 ⌘C 或 Ctrl+C。'; }
+});
+</script>
+</body>
+</html>
