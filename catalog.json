@@ -8,5 +8,15 @@
     "path": "link-cleaner.html",
     "category": "数字生活",
     "test": "node --test test-link-cleaner.mjs"
+  },
+  {
+    "id": 2,
+    "date": "2026-10-21",
+    "slug": "unit-price",
+    "title": "单价比较器 / Unit Price",
+    "problem": "购物时不同容量和组合包装难以直观看出哪款单价更低",
+    "path": "unit-price.html",
+    "category": "日常购物",
+    "test": "node --test test-unit-price.mjs"
   }
 ]

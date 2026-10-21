@@ -14,4 +14,4 @@ Build small, practical things that solve one concrete everyday problem. The user
 - GitHub Pages serves main at the repository root. Verify publication and include the live URL and commit URL in the completion report.
 - The user wants the whole production-to-publication flow to continue autonomously. Stop only for a concrete missing permission, login or irreducible blocker, and state it plainly.
 
-Current verification: `node --test test-link-cleaner.mjs` (Node.js >=20, no package installation).
+Current verification: `node --test test-*.mjs` (Node.js >=20, no package installation).

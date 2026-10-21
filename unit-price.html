@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="比较不同包装的商品单价，自动换算克/千克、毫升/升及件数。本地处理，零依赖，无需注册。">
+<meta name="referrer" content="no-referrer"><title>单价比较器 · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,input,select,textarea{font:inherit}button,a,input,select{outline-offset:4px}header{max-width:1040px;margin:auto;padding:25px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;font-size:13px}header a{text-decoration:none}.brand{font-weight:750;letter-spacing:.06em}.edition{color:var(--muted)}main{max-width:1040px;padding:42px 28px;margin:auto}.eyebrow{font-size:12px;letter-spacing:.15em;color:var(--orange);font-weight:700}h1{font-size:clamp(36px,6vw,60px);letter-spacing:-.04em;line-height:1.22;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{max-width:620px;color:var(--muted);margin:0 0 25px}.bar{display:flex;justify-content:space-between;gap:14px;align-items:center;margin:24px 0 18px;flex-wrap:wrap}.currency{display:flex;gap:10px;align-items:center;font-size:13px}.currency label{white-space:nowrap}.currency select{width:auto}.small{font-size:12px;color:var(--muted)}.actions{display:flex;gap:10px;flex-wrap:wrap}button{cursor:pointer}.button{padding:9px 15px;border:1px solid var(--line);border-radius:8px;background:var(--white);color:var(--ink);font-size:13px;font-weight:650}.primary{background:var(--ink);color:white;border-color:var(--ink)}.textbutton{background:none;border:0;color:var(--muted);padding:7px 3px;font-size:12px;text-decoration:underline;text-underline-offset:4px}button:disabled{opacity:.4;cursor:default}.products{display:grid;gap:14px}fieldset{margin:0;border:1px solid var(--line);border-radius:12px;background:var(--white);padding:17px 20px 20px;min-width:0}legend{font-size:12px;letter-spacing:.06em;font-weight:750;padding:0 8px}.row{display:grid;grid-template-columns:1.6fr 1fr 1fr .9fr .7fr auto;gap:13px;align-items:end}.field{display:flex;flex-direction:column;min-width:0}.field label{font-size:12px;color:var(--muted);margin-bottom:7px}input,select{width:100%;min-width:0;padding:10px 9px;border:1px solid var(--line);border-radius:6px;color:var(--ink);background:var(--white);font-size:15px;min-height:44px}input:focus,select:focus{outline:2px solid var(--ink)}.remove{margin-bottom:5px}.addrow{margin:16px 0 28px}.result-area{border-top:1px solid var(--line);padding-top:24px}h2{font-size:17px;margin:0}#status{margin:10px 0 18px;font-size:14px}.error{color:#a33c26}.group{margin:18px 0 24px}.grouphead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:12px}.grouphead h3{margin:0;font-size:14px}.saving{font-size:12px;color:var(--orange)}.result{display:grid;grid-template-columns:1fr auto;gap:10px 20px;padding:18px 20px;border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--white);overflow-wrap:anywhere}.best{background:#eaf0e5;border-color:#b0c3a4}.name{font-weight:700}.tag{font-size:11px;margin-left:8px;color:var(--ink);background:#d5e2ca;border-radius:20px;padding:3px 8px;display:inline-block}.cost{font-size:25px;font-weight:750;letter-spacing:-.025em;text-align:right}.denom{font-size:11px;font-weight:400;letter-spacing:0;display:block;color:var(--muted)}.detail{grid-column:1/-1;font-size:12px;color:var(--muted)}.notes{margin:26px 0 36px;color:var(--muted);font-size:12px}.notes p{margin:7px 0}#manual-copy{width:100%;height:150px;padding:12px;font-size:13px;border:1px solid var(--line);border-radius:8px}footer{border-top:1px solid var(--line);padding:20px 0;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:14px}@media(max-width:700px){header{padding:20px}.edition{display:none}main{padding:32px 20px}.row{grid-template-columns:1fr 1fr;gap:12px}.field:first-child{grid-column:1/-1}.remove{justify-self:start;margin:0}.result{padding:16px}.cost{font-size:22px}fieldset{padding:14px 16px 16px}footer{flex-direction:column;gap:7px}}
+</style></head>
+<body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">002 / EVERYDAY SHOPPING</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main><div class="eyebrow">小工具，解决一个真问题。</div><h1>包装不一样，<br><span>哪款更划算？</span></h1><p class="intro">填入实际总价、每包容量和包数，自动换算成相同单位比较。大包装、组合装，一眼看清单价。</p>
+<div class="bar"><div class="currency"><label for="currency">统一币种</label><select id="currency"><option value="HK$">HK$ 港元</option><option value="¥">¥ 人民币</option><option value="$">$ 美元</option></select></div><div class="actions"><button class="button" type="button" id="example">试试示例</button><button class="textbutton" type="button" id="reset">重置</button></div></div>
+<p class="small">总价填写全部包数的实付价（已扣优惠、含必要运费）。同一轮请使用同一币种；切换币种只更改标记，不换汇。</p>
+<div class="products" id="products" aria-label="待比较的商品"></div>
+<div class="addrow"><button class="button" type="button" id="add">＋ 添加一款</button><span class="small">　最多 8 款 · 实时计算</span></div>
+<section class="result-area" aria-labelledby="results-title"><div class="bar"><h2 id="results-title">单价比较 / COMPARISON</h2><button type="button" class="button primary" id="copy" disabled>复制结果</button></div><p id="status" role="status" aria-live="polite">填写至少两款商品，即可比较。</p><div id="results"></div><textarea id="manual-copy" readonly hidden aria-label="手动复制比较结果"></textarea></section>
+<div class="notes"><p>比较基准：每 100 g、每 100 ml 或每件。重量、容量、件数分组比较，不能直接互换。</p><p>请只比较用途、质量相近的商品；每包容量按包装标注填写。“件”仅适合同规格的独立物品。包数包含赠送的同规格包装。</p><p>金额最多 2 位小数，容量最多 3 位小数；金额与容量均不超过 1,000,000，包数为 1–10,000 的整数。输入须大于 0。</p><p>排名按未四舍五入的比值计算，显示单价约取 6 位有效数字。数据不上传、不保存，刷新或关闭即清空。可下载页面离线使用。</p></div>
+<footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer>
+</main>
+<script id="unit-price-core">
+function decimalValue(value, digits, max, label) {
+  const text = String(value ?? '').trim();
+  const pattern = digits ? new RegExp('^\\d+(?:\\.\\d{1,' + digits + '})?$') : /^\d+$/;
+  if (text.length > 24 || !pattern.test(text)) throw new Error(label + '须为有效正数，最多 ' + digits + ' 位小数。');
+  const [whole, fraction = ''] = text.split('.');
+  const scale = 10n ** BigInt(digits);
+  const number = BigInt(whole) * scale + BigInt(fraction.padEnd(digits, '0') || '0');
+  if (number <= 0n || number > BigInt(max) * scale) throw new Error(label + '须大于 0 且不超过 ' + max.toLocaleString('en-US') + '。');
+  return number;
+}
+function compareRates(a, b) {
+  const delta = a.cents * b.amount - b.cents * a.amount;
+  return delta < 0n ? -1 : delta > 0n ? 1 : 0;
+}
+function compareProducts(products) {
+  if (!Array.isArray(products) || products.length < 2 || products.length > 8) throw new Error('请填写 2–8 款商品。');
+  const units = { g: ['weight', 1n], kg: ['weight', 1000n], ml: ['volume', 1n], l: ['volume', 1000n], item: ['count', 1n] };
+  const groups = new Map();
+  products.forEach((product, index) => {
+    const name = String(product.name ?? '').trim().slice(0, 60) || '商品 ' + (index + 1);
+    const prefix = '第 ' + (index + 1) + ' 款：';
+    const cents = decimalValue(product.price, 2, 1000000, prefix + '总价');
+    const quantity = decimalValue(product.quantity, 3, 1000000, prefix + '每包容量');
+    const packs = decimalValue(product.packs, 0, 10000, prefix + '包数');
+    if (!Object.hasOwn(units, product.unit)) throw new Error(prefix + '请选择有效单位。');
+    if (product.unit === 'item' && quantity % 1000n !== 0n) throw new Error(prefix + '每包件数须为整数。');
+    const [type, factor] = units[product.unit];
+    const item = { name, cents, amount: quantity * factor * packs, order: index };
+    if (!groups.has(type)) groups.set(type, []);
+    groups.get(type).push(item);
+  });
+  return [...groups].map(([type, items]) => {
+    items.sort(compareRates);
+    const best = items[0], worst = items[items.length - 1];
+    const base = type === 'count' ? 1000n : 100000n;
+    const tieCount = items.filter(item => compareRates(item, best) === 0).length;
+    const savings = 100 * Number(worst.cents * best.amount - best.cents * worst.amount) / Number(worst.cents * best.amount);
+    return { type, tieCount, savings, items: items.map(item => ({ ...item, lowest: compareRates(item, best) === 0, unitPrice: Number(item.cents * base) / Number(item.amount * 100n) })) };
+  });
+}
+</script>
+<script>
+const $ = id => document.getElementById(id);
+let serial = 0, summary = '';
+const descriptions = { weight: ['重量', '每 100 g', 'g'], volume: ['容量', '每 100 ml', 'ml'], count: ['件数', '每件', '件'] };
+const money = value => value.toLocaleString('zh-CN', { maximumSignificantDigits: 6 });
+function addProduct(values = {}) {
+  if ($('products').children.length >= 8) return;
+  const id = ++serial;
+  const fieldset = document.createElement('fieldset');
+  fieldset.innerHTML = '<legend></legend><div class="row"><div class="field"><label for="name-' + id + '">商品名称（可选）</label><input id="name-' + id + '" data-field="name" maxlength="60" placeholder="例如：家庭装燕麦"></div><div class="field"><label for="price-' + id + '">实付总价</label><input id="price-' + id + '" data-field="price" type="text" inputmode="decimal" autocomplete="off" placeholder="32.90"></div><div class="field"><label for="quantity-' + id + '">每包容量 / 件数</label><input id="quantity-' + id + '" data-field="quantity" type="text" inputmode="decimal" autocomplete="off" placeholder="1000"></div><div class="field"><label for="unit-' + id + '">单位</label><select id="unit-' + id + '" data-field="unit"><option value="g">g 克</option><option value="kg">kg 千克</option><option value="ml">ml 毫升</option><option value="l">L 升</option><option value="item">件</option></select></div><div class="field"><label for="packs-' + id + '">包数</label><input id="packs-' + id + '" data-field="packs" type="text" inputmode="numeric" autocomplete="off" value="1"></div><button class="textbutton remove" type="button">移除</button></div>';
+  for (const field of fieldset.querySelectorAll('[data-field]')) if (values[field.dataset.field] !== undefined) field.value = values[field.dataset.field];
+  fieldset.querySelector('.remove').addEventListener('click', () => { fieldset.remove(); updateRows(); render(); });
+  $('products').append(fieldset); updateRows();
+}
+function updateRows() {
+  const rows = [...$('products').children];
+  rows.forEach((row, index) => { row.querySelector('legend').textContent = '商品 ' + (index + 1); const remove = row.querySelector('.remove'); remove.disabled = rows.length <= 2; remove.setAttribute('aria-label', '移除商品 ' + (index + 1)); });
+  $('add').disabled = rows.length >= 8;
+}
+function render() {
+  summary = ''; $('copy').disabled = true; $('results').replaceChildren(); $('manual-copy').hidden = true; $('status').className = '';
+  const products = [...$('products').children].map(row => Object.fromEntries([...row.querySelectorAll('[data-field]')].map(field => [field.dataset.field, field.value])));
+  if (products.every(product => !product.price && !product.quantity)) { $('status').textContent = '填写至少两款商品，即可比较。'; return; }
+  let groups;
+  try { groups = compareProducts(products); }
+  catch (error) { $('status').textContent = error.message + ' 补全后会自动更新结果。'; $('status').className = 'error'; return; }
+  const currency = $('currency').value;
+  const lines = ['单价比较（统一币种 ' + currency + '）'];
+  $('status').textContent = '已比较 ' + products.length + ' 款商品。' + (groups.length > 1 ? ' 不同计量类型已分组，不跨类型排名。' : ' 同组按单价从低到高排序。');
+  for (const group of groups) {
+    const [title, per, base] = descriptions[group.type];
+    const section = document.createElement('section'); section.className = 'group';
+    const head = document.createElement('div'); head.className = 'grouphead';
+    const heading = document.createElement('h3'); heading.textContent = title + ' · ' + per; head.append(heading);
+    const saving = document.createElement('span'); saving.className = 'saving';
+    saving.textContent = group.items.length < 2 ? '本组仅 1 款，暂不比较' : group.savings === 0 ? '本组单价相同' : '最低比本组最高单价低约 ' + group.savings.toFixed(1) + '%';
+    head.append(saving); section.append(head); lines.push(title + ' · ' + per);
+    for (const item of group.items) {
+      const result = document.createElement('div'); const best = item.lowest && group.items.length > 1; result.className = 'result' + (best ? ' best' : '');
+      const name = document.createElement('div'); name.className = 'name'; name.textContent = item.name;
+      if (best) { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = group.tieCount > 1 ? '并列最低' : '单价最低'; name.append(tag); }
+      const cost = document.createElement('div'); cost.className = 'cost'; cost.textContent = currency + ' ' + money(item.unitPrice);
+      const denom = document.createElement('span'); denom.className = 'denom'; denom.textContent = per; cost.append(denom);
+      const detail = document.createElement('div'); detail.className = 'detail'; detail.textContent = '实付 ' + currency + ' ' + (Number(item.cents) / 100).toFixed(2) + ' · 总量 ' + (Number(item.amount) / 1000).toLocaleString('zh-CN', { maximumFractionDigits: 3 }) + ' ' + base;
+      result.append(name, cost, detail); section.append(result);
+      lines.push(item.name + '：' + currency + ' ' + money(item.unitPrice) + ' / ' + per.replace('每 ', '').replace('每件', '件') + (best ? (group.tieCount > 1 ? '（并列最低）' : '（单价最低）') : ''));
+    }
+    $('results').append(section); lines.push(saving.textContent);
+  }
+  summary = lines.join('\n'); $('copy').disabled = false;
+}
+$('products').addEventListener('input', render); $('products').addEventListener('change', render); $('currency').addEventListener('change', render);
+$('add').addEventListener('click', () => { addProduct(); render(); $('products').lastElementChild.querySelector('input').focus(); });
+$('reset').addEventListener('click', () => { $('products').replaceChildren(); addProduct(); addProduct(); render(); });
+$('example').addEventListener('click', () => { $('products').replaceChildren(); addProduct({ name: '燕麦 · 小包装', price: '18.90', quantity: '500', unit: 'g', packs: '1' }); addProduct({ name: '燕麦 · 家庭装', price: '32.90', quantity: '1', unit: 'kg', packs: '1' }); render(); });
+$('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(summary); $('status').textContent = '比较结果已复制。'; } catch { $('manual-copy').hidden = false; $('manual-copy').value = summary; $('manual-copy').focus(); $('manual-copy').select(); $('status').textContent = '自动复制不可用，结果已选中，请按 ⌘C 或 Ctrl+C。'; } });
+addProduct(); addProduct();
+</script></body></html>
