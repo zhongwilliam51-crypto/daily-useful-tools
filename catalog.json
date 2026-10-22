@@ -18,5 +18,15 @@
     "path": "unit-price.html",
     "category": "日常购物",
     "test": "node --test test-unit-price.mjs"
+  },
+  {
+    "id": 3,
+    "date": "2026-10-22",
+    "slug": "list-cleaner",
+    "title": "清单去重器 / List Cleaner",
+    "problem": "从表格、聊天或网页复制的清单含有重复项与空行，需要手动整理",
+    "path": "list-cleaner.html",
+    "category": "日常效率",
+    "test": "node --test test-list-cleaner.mjs"
   }
 ]
