@@ -28,5 +28,15 @@
     "path": "list-cleaner.html",
     "category": "日常效率",
     "test": "node --test test-list-cleaner.mjs"
+  },
+  {
+    "id": 4,
+    "date": "2026-10-23",
+    "slug": "bill-split",
+    "title": "聚餐分账器 / Bill Split",
+    "problem": "聚餐有人先付账，均分或按份数分摊时出现分钱尾差，不清楚应转给垫付者多少",
+    "path": "bill-split.html",
+    "category": "日常社交",
+    "test": "node --test test-bill-split.mjs"
   }
 ]
