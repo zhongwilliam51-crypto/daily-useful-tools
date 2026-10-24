@@ -38,5 +38,15 @@
     "path": "bill-split.html",
     "category": "日常社交",
     "test": "node --test test-bill-split.mjs"
+  },
+  {
+    "id": 5,
+    "date": "2026-10-24",
+    "slug": "image-shrink",
+    "title": "图片缩小器 / Image Shrink",
+    "problem": "图片体积或尺寸太大，不方便发邮件、上传表单或分享",
+    "path": "image-shrink.html",
+    "category": "日常图片",
+    "test": "node --test test-image-shrink.mjs"
   }
 ]
