@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="把食谱从原份数换成想做的份数，支持小数、分数和带分数。用量在浏览器本地计算，可复制备料清单，无需注册。"><meta name="referrer" content="no-referrer"><title>食谱份量换算器 · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,input,textarea{font:inherit;outline-offset:4px}header{max-width:1120px;margin:auto;padding:25px 30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:13px}header a{text-decoration:none}.brand{font-weight:750;letter-spacing:.06em}.edition,.muted{color:var(--muted)}main{max-width:1120px;margin:auto;padding:38px 30px}.eyebrow{font-size:12px;color:var(--orange);letter-spacing:.15em;font-weight:750}h1{font-size:clamp(34px,6vw,58px);line-height:1.22;letter-spacing:-.04em;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{color:var(--muted);max-width:600px;margin-bottom:28px}.workspace{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start}.panel{min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--white);padding:24px}.result{background:#eef2e8}.panel h2{font-size:14px;margin:0 0 20px}.servings{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:15px;margin-bottom:22px}.servings span{padding-bottom:10px;color:var(--orange)}label[hidden]{display:none}label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}input,textarea{min-width:0;max-width:100%;width:100%;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--white);color:var(--ink);font-size:14px;min-height:44px}.ingredient{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.7fr) 32px;gap:8px;padding:14px 0;border-top:1px solid var(--line);align-items:end}.ingredient>div{min-width:0}.remove{border:0;background:transparent;color:var(--muted);font-size:22px;min-height:44px;cursor:pointer}.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px}button{cursor:pointer}.button{border:1px solid var(--line);border-radius:7px;padding:10px 15px;min-height:44px;background:var(--white);color:var(--ink);font-size:13px;font-weight:650}.primary{background:var(--ink);color:white;border-color:var(--ink)}.textbutton{border:0;background:transparent;color:var(--muted);font-size:12px;padding:8px 0;text-decoration:underline;text-underline-offset:4px}button:disabled{opacity:.4;cursor:default}.small{font-size:12px;color:var(--muted);margin:12px 0}.result-kicker{font-size:12px;letter-spacing:.08em;color:var(--muted)}#summary{font-size:28px;line-height:1.4;letter-spacing:-.03em;margin:12px 0 4px}#ratio{color:var(--orange);font-size:14px;margin:0 0 16px}#result-list{list-style:none;padding:0;margin:0}#result-list li{display:flex;justify-content:space-between;gap:18px;border-bottom:1px solid var(--line);padding:13px 0;font-size:15px}#result-list li span{overflow-wrap:anywhere;min-width:0}#result-list li strong{max-width:65%;overflow-wrap:anywhere;font-weight:650}#empty{color:var(--muted);font-size:14px;padding:30px 0}#copy-text{margin-top:16px;min-height:150px;font-size:12px;resize:vertical}#copy-text[hidden]{display:none}#status{font-size:13px;min-height:24px;margin:18px 0 0}.error{color:#a33c26}.notes{font-size:12px;color:var(--muted);margin:26px 0 32px;max-width:900px}.notes p{margin:7px 0}footer{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:12px}@media(max-width:760px){.workspace{grid-template-columns:1fr}.edition{display:none}main{padding:30px 20px}header{padding:20px}.panel{padding:20px}.ingredient{gap:6px;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.7fr) 26px}input{padding:10px 7px}footer{flex-direction:column;gap:6px}}
+</style></head><body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">006 / EVERYDAY COOKING</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main><div class="eyebrow">小工具，解决一个真问题。</div><h1>食谱写了两人份，<br><span>今天想做三人份。</span></h1><p class="intro">填原份数、目标份数和食材用量，一次算好新的备料清单。支持 0.5、1/2 和 1 1/2，不用逐项按计算器。</p>
+<div class="workspace"><section class="panel" aria-labelledby="input-heading"><h2 id="input-heading">01 / 原食谱</h2><div class="servings"><div><label for="from">原份数</label><input id="from" type="text" inputmode="numeric" value="2" autocomplete="off"></div><span aria-hidden="true">→</span><div><label for="to">目标份数</label><input id="to" type="text" inputmode="numeric" value="3" autocomplete="off"></div></div><div id="ingredients"></div><div class="actions"><button class="textbutton" id="add" type="button">＋ 添加食材</button><button class="textbutton" id="example" type="button">填入示例</button></div><p class="small" id="input-help">最多 20 项。用量填数字或分数，单位单独填（如 g、ml、个、汤匙）。完全空白的行会跳过。</p><div class="actions"><button class="button primary" id="calculate" type="button">换算份量 ↗</button><button class="textbutton" id="clear" type="button">清空</button></div><p id="status" role="status" aria-live="polite">填好后点击换算，或先试试示例。</p></section>
+<section class="panel result" aria-labelledby="result-heading"><h2 id="result-heading">02 / 新的备料清单</h2><div id="empty">换算结果会出现在这里。</div><div id="result-body" hidden><div class="result-kicker">READY TO COOK</div><h3 id="summary"></h3><p id="ratio"></p><ul id="result-list"></ul><p class="small">≈ 表示四舍五入到最多 3 位小数；小于 0.001 的用量单独标记。</p></div><div class="actions"><button class="button" id="copy" type="button" disabled>复制清单</button></div><label id="copy-label" for="copy-text" hidden>手动复制清单</label><textarea id="copy-text" readonly hidden spellcheck="false"></textarea></section></div>
+<div class="notes"><p>份数为 1–100 的整数；用量须大于 0、不超过 1,000,000。小数最多 3 位；分母为 1–1,000。带分数用空格分开，例如 1 1/2；也支持 ¼、½、¾。</p><p>只按比例换算用量，保留原单位，不做克与毫升等单位转换。鸡蛋、包装等不会自动取整，请按实际可分量调整；烹饪时间、温度和调味不一定同比例变化。</p><p>全部在当前浏览器计算，不上传、不保存食谱。修改输入会清除旧结果；清空或刷新后丢弃输入。页面可下载后离线使用。</p></div><footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer></main>
+<script id="recipe-scale-core">
+function recipeAmount(raw) {
+  let value = String(raw ?? '').trim();
+  if (value.length > 24) throw new Error('用量太长，请检查。');
+  value = value.replace(/([¼½¾])/g, (_, c) => ' ' + ({'¼':'1/4','½':'1/2','¾':'3/4'})[c]).trim();
+  let n, d, match;
+  if ((match = value.match(/^(\d{1,7})\s+(\d{1,7})\s*\/\s*(\d{1,4})$/))) {
+    const whole = BigInt(match[1]), part = BigInt(match[2]); d = BigInt(match[3]);
+    if (d < 1n || d > 1000n || part <= 0n || part >= d) throw new Error('带分数的分数部分须为真分数，分母为 1–1,000。');
+    n = whole * d + part;
+  } else if ((match = value.match(/^(\d{1,7})\s*\/\s*(\d{1,4})$/))) {
+    n = BigInt(match[1]); d = BigInt(match[2]);
+    if (d < 1n || d > 1000n) throw new Error('分母须为 1–1,000。');
+  } else if (/^(?:\d{1,7}(?:\.\d{1,3})?|\.\d{1,3})$/.test(value)) {
+    const [whole, part = ''] = value.split('.'); d = 10n ** BigInt(part.length); n = BigInt(whole || '0') * d + BigInt(part || '0');
+  } else throw new Error('用量请填小数、1/2 或 1 1/2；“适量”等文字请自行调整。');
+  if (n <= 0n || n > 1000000n * d) throw new Error('用量须大于 0 且不超过 1,000,000。');
+  return { n, d };
+}
+function recipeServing(raw) {
+  const s = String(raw ?? '').trim();
+  if (!/^\d{1,3}$/.test(s) || Number(s) < 1 || Number(s) > 100) throw new Error('原份数和目标份数须为 1–100 的整数。');
+  return BigInt(s);
+}
+function recipeNumber(n, d) {
+  if (n * 1000n < d) return '<0.001';
+  const scaled = n * 1000n, rounded = (scaled * 2n + d) / (2n * d);
+  const text = String(rounded / 1000n) + (rounded % 1000n ? '.' + String(rounded % 1000n).padStart(3, '0').replace(/0+$/, '') : '');
+  return (scaled % d === 0n ? '' : '≈') + text;
+}
+function scaleRecipe(from, to, rows) {
+  const base = recipeServing(from), target = recipeServing(to);
+  if (!Array.isArray(rows) || rows.length < 1 || rows.length > 20) throw new Error('请填写 1–20 项食材。');
+  const items = [];
+  rows.forEach((row, index) => {
+    if (!row || typeof row !== 'object') throw new Error('食材记录无效。');
+    const name = String(row.name ?? '').trim(), amount = String(row.amount ?? '').trim(), unit = String(row.unit ?? '').trim();
+    if (!name && !amount && !unit) return;
+    if (!name || !amount) throw new Error('第 ' + (index + 1) + ' 项请同时填写食材和用量。');
+    if (name.length > 40 || unit.length > 12 || /[\u0000-\u001f\u007f]/.test(name + unit)) throw new Error('食材最多 40 字，单位最多 12 字，均不可含换行或控制符。');
+    let quantity;
+    try { quantity = recipeAmount(amount); } catch (error) { throw new Error('第 ' + (index + 1) + ' 项：' + error.message); }
+    const n = quantity.n * target, d = quantity.d * base;
+    items.push({ name, unit, n, d, display: recipeNumber(n, d) });
+  });
+  if (!items.length) throw new Error('请至少填写一项食材和用量。');
+  const ratio = recipeNumber(target, base);
+  const text = base + ' → ' + target + ' 份（×' + ratio + '）\n' + items.map(item => item.name + '：' + item.display + (item.unit ? ' ' + item.unit : '')).join('\n') + '\n\n≈ 表示四舍五入到最多 3 位小数；单位未转换。';
+  return { base, target, ratio, items, text };
+}
+</script>
+<script>
+const $ = id => document.getElementById(id);
+let rowId = 0, revision = 0;
+function status(message, error = false) { $('status').textContent = message; $('status').className = error ? 'error' : ''; }
+function invalidate() {
+  revision++; $('result-body').hidden = true; $('empty').hidden = false; $('result-list').replaceChildren(); $('copy').disabled = true; $('copy-text').value = ''; $('copy-text').hidden = true; $('copy-label').hidden = true;
+  status('输入已更新，请重新换算。');
+}
+function updateRows() {
+  const rows = [...$('ingredients').children]; $('add').disabled = rows.length >= 20;
+  rows.forEach((row, index) => {
+    row.querySelector('.remove').setAttribute('aria-label', '移除食材 ' + (index + 1));
+    row.querySelector('.remove').disabled = rows.length === 1;
+    for (const [key, label] of [['name','食材'],['amount','原用量'],['unit','单位']]) row.querySelector('[data-key="' + key + '"]').setAttribute('aria-label', '食材 ' + (index + 1) + ' · ' + label);
+  });
+}
+function addRow(data = {}, focus = false) {
+  if ($('ingredients').children.length >= 20) return;
+  const row = document.createElement('div'); row.className = 'ingredient'; const id = ++rowId;
+  for (const [key, label, placeholder] of [['name','食材','如：面粉'],['amount','原用量','如：1/2'],['unit','单位','如：g']]) {
+    const wrap = document.createElement('div'), input = document.createElement('input'), caption = document.createElement('label');
+    input.id = 'ingredient-' + id + '-' + key; input.type = 'text'; input.dataset.key = key; input.value = data[key] || ''; input.placeholder = placeholder; input.autocomplete = 'off'; input.maxLength = key === 'name' ? 40 : key === 'unit' ? 12 : 24;
+    caption.htmlFor = input.id; caption.textContent = label; wrap.append(caption, input); row.append(wrap);
+  }
+  const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove'; remove.textContent = '×'; remove.addEventListener('click', () => { row.remove(); updateRows(); invalidate(); const next = $('ingredients').children[0]; if (next) next.querySelector('input').focus(); }); row.append(remove);
+  $('ingredients').append(row); updateRows(); if (focus) row.querySelector('input').focus();
+}
+function calculate() {
+  invalidate();
+  try {
+    const rows = [...$('ingredients').children].map(row => Object.fromEntries([...row.querySelectorAll('input')].map(input => [input.dataset.key, input.value])));
+    const result = scaleRecipe($('from').value, $('to').value, rows);
+    $('summary').textContent = result.base + ' → ' + result.target + ' 份'; $('ratio').textContent = '所有用量 × ' + result.ratio;
+    for (const item of result.items) { const li = document.createElement('li'), name = document.createElement('span'), value = document.createElement('strong'); name.textContent = item.name; value.textContent = item.display + (item.unit ? ' ' + item.unit : ''); li.append(name, value); $('result-list').append(li); }
+    $('copy-text').value = result.text; $('empty').hidden = true; $('result-body').hidden = false; $('copy').disabled = false;
+    status('已换算 ' + result.items.length + ' 项食材，可复制清单。');
+  } catch (error) { status(error.message, true); }
+}
+$('ingredients').addEventListener('input', invalidate); $('from').addEventListener('input', invalidate); $('to').addEventListener('input', invalidate);
+$('add').addEventListener('click', () => { addRow({}, true); invalidate(); }); $('calculate').addEventListener('click', calculate);
+$('example').addEventListener('click', () => { $('from').value = '2'; $('to').value = '3'; $('ingredients').replaceChildren(); [{name:'面粉',amount:'200',unit:'g'},{name:'牛奶',amount:'150',unit:'ml'},{name:'鸡蛋',amount:'1',unit:'个'},{name:'糖',amount:'1 1/2',unit:'汤匙'}].forEach(data => addRow(data)); invalidate(); calculate(); });
+$('clear').addEventListener('click', () => { $('ingredients').replaceChildren(); $('from').value = '2'; $('to').value = '3'; addRow(); addRow(); invalidate(); status('已清空。食谱仅在当前页面处理。'); });
+$('copy').addEventListener('click', async () => {
+  const ticket = revision, text = $('copy-text').value; if (!text) return;
+  try { await navigator.clipboard.writeText(text); if (ticket === revision) status('清单已复制。'); }
+  catch { if (ticket === revision) { $('copy-text').hidden = false; $('copy-label').hidden = false; $('copy-text').focus(); $('copy-text').select(); status('无法自动复制，请复制已选中的清单。'); } }
+});
+document.addEventListener('keydown', event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); calculate(); } });
+addRow(); addRow();
+</script></body></html>

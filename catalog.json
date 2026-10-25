@@ -48,5 +48,15 @@
     "path": "image-shrink.html",
     "category": "日常图片",
     "test": "node --test test-image-shrink.mjs"
+  },
+  {
+    "id": 6,
+    "date": "2026-10-25",
+    "slug": "recipe-scale",
+    "title": "食谱份量换算器 / Recipe Scale",
+    "problem": "食谱人数和实际用餐人数不一致，需要逐项手算食材用量，分数尤其麻烦",
+    "path": "recipe-scale.html",
+    "category": "日常烹饪",
+    "test": "node --test test-recipe-scale.mjs"
   }
 ]
