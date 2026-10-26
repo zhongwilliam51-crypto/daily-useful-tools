@@ -58,5 +58,15 @@
     "path": "recipe-scale.html",
     "category": "日常烹饪",
     "test": "node --test test-recipe-scale.mjs"
+  },
+  {
+    "id": 7,
+    "date": "2026-10-26",
+    "slug": "date-offset",
+    "title": "日期推算器 / Date Offset",
+    "problem": "安排活动或复习时，不容易快速算出几天前后是哪天，跨月和跳过周末尤其容易数错",
+    "path": "date-offset.html",
+    "category": "日常计划",
+    "test": "node --test test-date-offset.mjs"
   }
 ]
