@@ -68,5 +68,15 @@
     "path": "date-offset.html",
     "category": "日常计划",
     "test": "node --test test-date-offset.mjs"
+  },
+  {
+    "id": 8,
+    "date": "2026-10-27",
+    "slug": "random-groups",
+    "title": "随机分组器 / Random Groups",
+    "problem": "学习讨论或活动组队时，需要手动抽签并均衡各组人数，名单容易重复或漏人",
+    "path": "random-groups.html",
+    "category": "日常协作",
+    "test": "node --test test-random-groups.mjs"
   }
 ]
