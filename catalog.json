@@ -78,5 +78,15 @@
     "path": "random-groups.html",
     "category": "日常协作",
     "test": "node --test test-random-groups.mjs"
+  },
+  {
+    "id": 9,
+    "date": "2026-10-28",
+    "slug": "time-total",
+    "title": "时间段合计器 / Time Total",
+    "problem": "一天内有多个零散学习或工作时段，手算总时长容易算入休息或重复计算重叠时间",
+    "path": "time-total.html",
+    "category": "日常时间",
+    "test": "node --test test-time-total.mjs"
   }
 ]

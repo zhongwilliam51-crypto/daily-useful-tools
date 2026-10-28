@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="合计一天内多个学习、工作或活动时段的时长，检查重叠并计算中间间隔。浏览器本地计算，无需注册，可离线使用。"><meta name="referrer" content="no-referrer"><title>时间段合计器 · Daily Useful Tools</title><style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,input,textarea{font:inherit;outline-offset:4px}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--orange)}header{max-width:1120px;margin:auto;padding:25px 30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:13px}header a{text-decoration:none}.brand{font-weight:750;letter-spacing:.06em}.edition{color:var(--muted)}main{max-width:1120px;margin:auto;padding:38px 30px}.eyebrow{font-size:12px;color:var(--orange);letter-spacing:.15em;font-weight:750}h1{font-size:clamp(34px,6vw,58px);line-height:1.22;letter-spacing:-.04em;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{color:var(--muted);max-width:600px;margin-bottom:28px}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.panel{min-width:0;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--white)}.results{background:#eef2e8}.panel h2{font-size:14px;margin:0 0 20px}label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}label[hidden]{display:none}textarea,input{min-width:0;width:100%;border:1px solid var(--line);border-radius:7px;padding:12px;background:var(--white);color:var(--ink);font-size:15px}textarea{resize:vertical;min-height:270px;line-height:1.7}input{max-width:120px;min-height:44px}.options{display:flex;gap:18px;align-items:end;flex-wrap:wrap;margin-top:18px}.options p{margin:0 0 8px;font-size:12px;color:var(--muted);max-width:220px}.actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:18px}button{cursor:pointer}.button{border:1px solid var(--line);border-radius:7px;padding:10px 16px;min-height:44px;background:var(--white);color:var(--ink);font-size:13px;font-weight:650}.primary{background:var(--ink);color:white;border-color:var(--ink)}.textbutton{border:0;background:none;color:var(--muted);font-size:12px;padding:8px 0;text-decoration:underline;text-underline-offset:4px}button:disabled{opacity:.4;cursor:default}.small{font-size:12px;color:var(--muted)}#status{font-size:13px;min-height:24px;margin:18px 0 0}.error{color:#a33c26}#empty{color:var(--muted);font-size:14px;padding:28px 0}#summary{font-size:26px;letter-spacing:-.03em;line-height:1.4;margin:0 0 18px}.group-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.group{min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--white);padding:16px}.group h3{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin:0 0 12px;color:var(--orange)}.group h3 span{color:var(--muted);font-size:12px;font-weight:400}.group ul{padding:0;list-style:none;margin:0}.group li{font-size:14px;line-height:1.8;overflow-wrap:anywhere}#copy-text{min-height:170px;font-size:12px;margin-top:8px}#copy-text[hidden]{display:none}#copy-label{margin-top:14px}.notes{font-size:12px;color:var(--muted);margin:26px 0 32px;max-width:950px}.notes p{margin:7px 0}footer{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:12px}@media(max-width:720px){.workspace{grid-template-columns:1fr}.edition{display:none}main{padding:30px 20px}header{padding:20px}.panel{padding:20px}.group-grid{gap:10px}.group{padding:14px}footer{flex-direction:column;gap:6px}}
+
+#times{min-height:240px}#duration{font-size:clamp(28px,4vw,40px);font-weight:750;line-height:1.35;letter-spacing:-.04em;margin:8px 0 12px;overflow-wrap:anywhere}#decimal{font-size:13px;color:var(--orange);margin:0 0 20px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.stat{padding:14px;background:var(--white);border:1px solid var(--line);border-radius:8px;min-width:0}.stat dt{color:var(--muted);font-size:12px}.stat dd{margin:6px 0 0;font-size:15px;overflow-wrap:anywhere}#segments{padding:0;list-style:none;margin:0}#segments li{border-top:1px solid var(--line);padding:12px 0;display:flex;justify-content:space-between;gap:12px;font-size:13px}#segments li span{min-width:0;overflow-wrap:anywhere}#segments li strong{font-weight:600;white-space:nowrap}.actions{margin-top:16px}#copy-label[hidden]{display:none}.result-heading{font-size:12px;color:var(--muted);margin:0}</style></head><body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">009 / EVERYDAY TIME</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main><div class="eyebrow">小工具，解决一个真问题。</div><h1>零散的几段时间，<br><span>一共用了多久？</span></h1><p class="intro">记下学习、工作或活动的起止时间，一次算好总时长。中间休息不算进去，重叠时段会提示修正，避免重复计时。</p>
+<div class="workspace"><section class="panel" aria-labelledby="input-heading"><h2 id="input-heading">01 / 同一天的时间段</h2><label for="times">每行一段：开始时间 - 结束时间</label><textarea id="times" spellcheck="false" placeholder="09:00-11:30&#10;13:00-14:15&#10;15:00-16:00" aria-describedby="times-help"></textarea><p class="small" id="times-help">最多 100 段、10,000 个 UTF-16 码元。可写 9:00 或 09:00；结束时间可用 24:00。空行会跳过，结果按开始时间排序。</p><div class="actions"><button class="button primary" id="calculate" type="button">合计时长 ↗</button><button class="textbutton" id="example" type="button">填入示例</button><button class="textbutton" id="clear" type="button">清空</button></div><p id="status" role="status" aria-live="polite">填好时段后合计，或先试试示例。</p></section>
+<section class="panel results" aria-labelledby="result-heading"><h2 id="result-heading">02 / 时间用在了哪里</h2><p id="empty">总时长会显示在这里。</p><div id="result" hidden><p class="result-heading">各时段合计 · 不含间隔</p><p id="duration"></p><p id="decimal"></p><dl class="stats"><div class="stat"><dt>首末跨度</dt><dd id="span"></dd></div><div class="stat"><dt>期间间隔</dt><dd id="gaps"></dd></div></dl><p class="small" id="range"></p><ul id="segments"></ul></div><div class="actions"><button class="button" id="copy" type="button" disabled>复制结果</button></div><label for="copy-text" id="copy-label" hidden>手动复制结果</label><textarea id="copy-text" readonly hidden spellcheck="false"></textarea></section></div>
+<div class="notes"><p>每段结束时间必须晚于开始时间，且都属于同一天。跨午夜的记录请按日期拆开，分别合计；例如前一天 23:00–24:00、后一天 00:00–01:00。24:00 只能用作结束时间。</p><p>可以首尾相接，例如 09:00–10:00 和 10:00–11:00；重复或重叠的时段会报错，不自动合并。支持连接符 -、–、—、~、～ 或“至”，不解析时段外的标签或备注。</p><p>按小时与分钟计算，不包含日期、秒数或时区换算。十进制小时四舍五入到 2 位小数，小时分钟结果精确到分。期间间隔只指最早开始到最晚结束之间未被填写的时间。</p><p>全部在当前浏览器计算，不上传、不保存历史；修改输入会清除旧结果，清空或刷新后丢弃输入。页面可下载后离线使用，支持 ⌘ / Ctrl + Enter 合计。</p></div><footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer></main>
+<script id="time-total-core">
+function parseClock(raw, allowEnd = false) {
+  if (typeof raw !== 'string' || !/^\d{1,2}:\d{2}$/.test(raw)) throw new Error('时间请使用 H:MM 或 HH:MM 格式。');
+  const [hours, minutes] = raw.split(':').map(Number);
+  if (hours === 24 && minutes === 0 && allowEnd) return 1440;
+  if (hours > 23 || minutes > 59) throw new Error('时间超出范围；24:00 只能用作结束时间。');
+  return hours * 60 + minutes;
+}
+function timeClock(minutes) { return String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0'); }
+function timeDuration(minutes) {
+  const hours = Math.floor(minutes / 60), rest = minutes % 60;
+  return hours ? hours + ' 小时' + (rest ? ' ' + rest + ' 分钟' : '') : rest + ' 分钟';
+}
+function totalTime(raw) {
+  if (typeof raw !== 'string' || raw.length > 10000) throw new Error('输入须为文字，且不超过 10,000 个 UTF-16 码元。');
+  const segments = [];
+  for (const [index, line] of raw.split(/\r\n?|\n/).entries()) {
+    const value = line.trim(); if (!value) continue;
+    const match = value.match(/^(\d{1,2}:\d{2})\s*[-–—~～至]\s*(\d{1,2}:\d{2})$/);
+    if (!match) throw new Error('第 ' + (index + 1) + ' 行格式不正确，请只填开始时间-结束时间。');
+    let start, end;
+    try { start = parseClock(match[1]); end = parseClock(match[2], true); }
+    catch (error) { throw new Error('第 ' + (index + 1) + ' 行：' + error.message); }
+    if (end <= start) throw new Error('第 ' + (index + 1) + ' 行结束时间须晚于开始时间；跨午夜请按日期拆开。');
+    segments.push({ start, end, line: index + 1, minutes: end - start });
+    if (segments.length > 100) throw new Error('最多支持 100 个时段，请分批合计。');
+  }
+  if (!segments.length) throw new Error('请至少填写一个有效时段。');
+  segments.sort((a, b) => a.start - b.start || a.line - b.line);
+  for (let i = 1; i < segments.length; i++) {
+    if (segments[i].start < segments[i - 1].end) throw new Error('第 ' + segments[i - 1].line + ' 行与第 ' + segments[i].line + ' 行重叠，请修正以免重复计时。');
+  }
+  const total = segments.reduce((sum, segment) => sum + segment.minutes, 0);
+  const start = segments[0].start, end = segments[segments.length - 1].end, span = end - start, gaps = span - total;
+  const decimal = (total / 60).toFixed(2);
+  const text = '时间段合计：' + timeDuration(total) + '（十进制约 ' + decimal + ' 小时）\n' + segments.map(s => timeClock(s.start) + '–' + timeClock(s.end) + '：' + timeDuration(s.minutes)).join('\n') + '\n\n首末跨度：' + timeDuration(span) + '\n期间间隔：' + timeDuration(gaps) + '\n范围：' + timeClock(start) + '–' + timeClock(end) + '，共 ' + segments.length + ' 段；同一天，不含期间间隔。';
+  return { segments, total, decimal, start, end, span, gaps, text };
+}
+</script>
+<script>
+const $ = id => document.getElementById(id);
+let revision = 0;
+function status(message, error = false) { $('status').textContent = message; $('status').className = error ? 'error' : ''; }
+function invalidate() { revision++; $('result').hidden = true; $('empty').hidden = false; $('segments').replaceChildren(); $('copy').disabled = true; $('copy-text').value = ''; $('copy-text').hidden = true; $('copy-label').hidden = true; status('输入已更新，请重新合计。'); }
+function calculate() {
+  invalidate();
+  try {
+    const r = totalTime($('times').value); $('duration').textContent = timeDuration(r.total); $('decimal').textContent = '十进制约 ' + r.decimal + ' 小时'; $('span').textContent = timeDuration(r.span); $('gaps').textContent = timeDuration(r.gaps); $('range').textContent = timeClock(r.start) + '–' + timeClock(r.end) + ' · 共 ' + r.segments.length + ' 段';
+    for (const segment of r.segments) { const li = document.createElement('li'), range = document.createElement('span'), duration = document.createElement('strong'); range.textContent = timeClock(segment.start) + '–' + timeClock(segment.end); duration.textContent = timeDuration(segment.minutes); li.append(range, duration); $('segments').append(li); }
+    $('copy-text').value = r.text; $('result').hidden = false; $('empty').hidden = true; $('copy').disabled = false; status('已合计 ' + r.segments.length + ' 个时段，结果可复制。');
+  } catch (error) { status(error.message, true); }
+}
+$('times').addEventListener('input', invalidate); $('calculate').addEventListener('click', calculate);
+$('example').addEventListener('click', () => { $('times').value = '09:00-11:30\n13:00-14:15\n15:00-16:00'; calculate(); });
+$('clear').addEventListener('click', () => { $('times').value = ''; invalidate(); status('已清空。时间记录只在当前页面处理。'); });
+$('copy').addEventListener('click', async () => { const ticket = revision, text = $('copy-text').value; if (!text) return; try { await navigator.clipboard.writeText(text); if (ticket === revision) status('时间合计结果已复制。'); } catch { if (ticket === revision) { $('copy-text').hidden = false; $('copy-label').hidden = false; $('copy-text').focus(); $('copy-text').select(); status('无法自动复制，请复制已选中的结果。'); } } });
+document.addEventListener('keydown', event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); calculate(); } });
+</script></body></html>
