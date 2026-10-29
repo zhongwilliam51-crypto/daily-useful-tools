@@ -88,5 +88,15 @@
     "path": "time-total.html",
     "category": "日常时间",
     "test": "node --test test-time-total.mjs"
+  },
+  {
+    "id": 10,
+    "date": "2026-10-29",
+    "slug": "transfer-time",
+    "title": "文件传输时间估算器 / Transfer Time",
+    "problem": "下载或上传大文件前不清楚要等多久，容易混淆 Mbps 与 MB/s 及不同容量单位",
+    "path": "transfer-time.html",
+    "category": "数字传输",
+    "test": "node --test test-transfer-time.mjs"
   }
 ]
