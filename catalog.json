@@ -98,5 +98,15 @@
     "path": "transfer-time.html",
     "category": "数字传输",
     "test": "node --test test-transfer-time.mjs"
+  },
+  {
+    "id": 11,
+    "date": "2026-10-30",
+    "slug": "list-compare",
+    "title": "清单核对器 / List Compare",
+    "problem": "两份采购、打包或交接清单需要逐行对照，容易漏看缺少和多出的项目",
+    "path": "list-compare.html",
+    "category": "日常核对",
+    "test": "node --test test-list-compare.mjs"
   }
 ]

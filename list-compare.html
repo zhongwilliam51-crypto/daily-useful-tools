@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="对照应该有和实际有的两份清单，找出缺少、多出与共有项目。无需注册，本地处理，可离线使用。">
+<meta name="referrer" content="no-referrer"><title>清单核对器 · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,textarea,input{font:inherit;outline-offset:4px}button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--orange)}[hidden]{display:none!important}
+header{max-width:1120px;margin:auto;padding:25px 30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:13px}header a{text-decoration:none}.brand{font-weight:750;letter-spacing:.06em}.edition{color:var(--muted)}main{max-width:1120px;margin:auto;padding:38px 30px}.eyebrow{font-size:12px;color:var(--orange);letter-spacing:.15em;font-weight:750}h1{font-size:clamp(34px,6vw,58px);line-height:1.22;letter-spacing:-.04em;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{color:var(--muted);max-width:650px;margin-bottom:28px}
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:24px}.panel{min-width:0;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--white)}.panel h2{font-size:14px;margin:0 0 16px}.hint{font-size:12px;color:var(--muted);margin:0 0 10px}label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}textarea{width:100%;min-width:0;min-height:210px;border:1px solid var(--line);border-radius:7px;padding:12px;background:var(--white);color:var(--ink);font-size:15px;line-height:1.7;resize:vertical}
+.controls{margin:20px 0 24px}.check{display:flex;gap:9px;align-items:center;min-height:36px;font-size:13px;width:fit-content}.check input{width:18px;height:18px;accent-color:var(--ink)}.actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:12px}button{cursor:pointer}.button{border:1px solid var(--line);border-radius:7px;padding:10px 16px;min-height:44px;background:var(--white);color:var(--ink);font-size:13px;font-weight:650}.primary{background:var(--ink);color:white;border-color:var(--ink)}.textbutton{border:0;background:none;color:var(--muted);font-size:12px;padding:8px 0;text-decoration:underline;text-underline-offset:4px}button:disabled{opacity:.4;cursor:default}#status{font-size:13px;min-height:24px;margin:14px 0 0}.error{color:#a33c26}
+.results{background:#eef2e8}#empty{color:var(--muted);font-size:14px;margin:0}#summary{font-size:25px;line-height:1.4;letter-spacing:-.03em;margin:0 0 8px}#counts,#duplicates{font-size:13px;color:var(--muted);margin:6px 0 16px}.groups{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.group{min-width:0;background:var(--white);border:1px solid var(--line);border-radius:9px;padding:18px}.group h3{font-size:14px;margin:0 0 12px}.group:first-child h3{color:var(--orange)}.group ul{list-style:none;padding:0;margin:0;max-height:300px;overflow:auto}.group li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}.none{font-size:13px;color:var(--muted);margin:0}.missing-copy{margin-top:20px}#copy-text{min-height:180px;font-size:12px}#copy-label{margin-top:16px}.notes{font-size:12px;color:var(--muted);margin:26px 0 32px;max-width:960px}.notes p{margin:7px 0}footer{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:12px}
+@media(max-width:720px){.inputs,.groups{grid-template-columns:1fr}.edition{display:none}main{padding:30px 20px}header{padding:20px}.panel{padding:20px}textarea{min-height:170px}.group{padding:16px}#summary{font-size:23px}footer{flex-direction:column;gap:6px}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">011 / EVERYDAY CHECKLISTS</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main><div class="eyebrow">小工具，解决一个真问题。</div><h1>对照两份清单，<br><span>哪里漏了，一眼看见。</span></h1><p class="intro">采购、打包或交接资料，把“应该有”和“实际有”各贴一份。找出缺少的、多出来的，以及两边都有的项目，省去逐行来回核对。</p>
+<div class="inputs"><section class="panel" aria-labelledby="expected-heading"><h2 id="expected-heading">01 / 应该有</h2><label for="expected">基准清单 · 每行一项</label><p class="hint" id="expected-hint">例如打包计划或交接要求；可留空。</p><textarea id="expected" aria-describedby="expected-hint" placeholder="牙刷&#10;牙膏&#10;充电器" spellcheck="false" autocomplete="off"></textarea></section>
+<section class="panel" aria-labelledby="actual-heading"><h2 id="actual-heading">02 / 实际有</h2><label for="actual">实际清单 · 每行一项</label><p class="hint" id="actual-hint">例如已装进包里的物品；可留空。</p><textarea id="actual" aria-describedby="actual-hint" placeholder="牙刷&#10;充电器&#10;纸巾" spellcheck="false" autocomplete="off"></textarea></section></div>
+<div class="controls"><label class="check"><input type="checkbox" id="ignore-case" checked>忽略英文字母大小写（A–Z）</label><div class="actions"><button type="button" class="button primary" id="compare">核对清单 ↗</button><button type="button" class="textbutton" id="example">试试示例</button><button type="button" class="textbutton" id="swap">交换两份清单</button><button type="button" class="textbutton" id="clear">清空</button></div><p id="status" role="status" aria-live="polite">每行一项，至少在一侧填入内容后核对。</p></div>
+<section class="panel results" aria-labelledby="result-heading"><h2 id="result-heading">03 / 核对结果</h2><p id="empty">缺少 = 应该有但实际没有；多出 = 实际有但基准没有。</p><div id="result" hidden><p id="summary"></p><p id="counts"></p><p id="duplicates"></p><div class="groups"><section class="group"><h3 id="missing-heading"></h3><ul id="missing" aria-labelledby="missing-heading"></ul><p id="missing-none" class="none" hidden>没有缺少项目。</p></section><section class="group"><h3 id="extra-heading"></h3><ul id="extra" aria-labelledby="extra-heading"></ul><p id="extra-none" class="none" hidden>没有多出项目。</p></section><section class="group"><h3 id="common-heading"></h3><ul id="common" aria-labelledby="common-heading"></ul><p id="common-none" class="none" hidden>没有共有项目。</p></section></div></div><div class="actions missing-copy"><button type="button" class="button" id="copy" disabled>复制完整结果</button></div><label id="copy-label" for="copy-text" hidden>手动复制完整结果</label><textarea id="copy-text" readonly hidden spellcheck="false"></textarea></section>
+<div class="notes"><p>两侧各最多 1,000 个非空行、100,000 个 UTF-16 码元；每项最多 200 个 Unicode 码点。超限会报错，不截断内容。支持 Windows、Unix 和旧 Mac 换行。</p><p>自动跳过空行、去掉每行首尾空白，保留行内空格。按整行项目名称核对，不解析编号、勾选框、逗号或数量；“牛奶 ×2”与“牛奶”会视为不同项目。</p><p>重复项目只算一项，并提示重复行数；本工具核对项目是否出现，不核对件数。同名的人或物品请加编号。按各自首次出现的顺序显示，共有项采用基准清单的文字。</p><p>大小写选项只折叠 A–Z。不自动合并全角半角、简繁体、组合字符或近似拼写；请先统一写法。修改、交换或清空清单后会清除旧结果，支持 ⌘ / Ctrl + Enter 核对。</p><p>全部在当前浏览器内处理，不上传、不保存历史。刷新或关闭会丢弃输入；页面可下载后离线使用。</p></div>
+<footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer>
+</main>
+<script id="list-compare-core">
+function checklistKey(text, ignoreCase) {
+  return ignoreCase ? text.replace(/[A-Z]/g, letter => letter.toLowerCase()) : text;
+}
+function checklistItems(raw, label, ignoreCase) {
+  if (typeof raw !== 'string') throw new Error(label + '须为逐行文字。');
+  if (raw.length > 100000) throw new Error(label + '超过 100,000 个 UTF-16 码元，请分批核对。');
+  const items = new Map(); let nonempty = 0, duplicates = 0;
+  const lines = raw.split(/\r\n|\n|\r/);
+  for (let i = 0; i < lines.length; i++) {
+    const text = lines[i].trim(); if (!text) continue;
+    nonempty++;
+    if (nonempty > 1000) throw new Error(label + '超过 1,000 个非空行，请分批核对。');
+    if ([...text].length > 200) throw new Error(label + '第 ' + (i + 1) + ' 行超过 200 个字，请缩短该项。');
+    const key = checklistKey(text, ignoreCase);
+    if (items.has(key)) duplicates++; else items.set(key, text);
+  }
+  return {items, nonempty, duplicates};
+}
+function compareChecklists(expected, actual, ignoreCase = true) {
+  if (typeof ignoreCase !== 'boolean') throw new Error('请选择有效的大小写规则。');
+  const a = checklistItems(expected, '基准清单', ignoreCase), b = checklistItems(actual, '实际清单', ignoreCase);
+  if (!a.items.size && !b.items.size) throw new Error('至少在一侧填入一项内容后再核对。');
+  const missing = [], extra = [], common = [];
+  for (const [key, text] of a.items) (b.items.has(key) ? common : missing).push(text);
+  for (const [key, text] of b.items) if (!a.items.has(key)) extra.push(text);
+  const rule = '去掉首尾空白、跳过空行；' + (ignoreCase ? '忽略 A–Z 大小写' : '区分大小写') + '；重复项只计一次，不核对数量。';
+  const counts = '基准 ' + a.items.size + ' 项，实际 ' + b.items.size + ' 项，共有 ' + common.length + ' 项。';
+  const duplicates = '重复行：基准 ' + a.duplicates + ' 行，实际 ' + b.duplicates + ' 行（均已按项目合并）。';
+  const section = (label, list) => label + '（' + list.length + ' 项）\n' + (list.join('\n') || '（无）');
+  const text = '清单核对结果\n' + counts + '\n' + duplicates + '\n规则：' + rule + '\n\n' + section('缺少', missing) + '\n\n' + section('多出', extra) + '\n\n' + section('共有', common);
+  return {missing, extra, common, expectedCount:a.items.size, actualCount:b.items.size, expectedDuplicates:a.duplicates, actualDuplicates:b.duplicates, counts, duplicates, rule, text};
+}
+</script>
+<script>
+const $ = id => document.getElementById(id); let revision = 0;
+function status(message, error = false) { $('status').textContent = message; $('status').className = error ? 'error' : ''; }
+function invalidate() { revision++; $('result').hidden = true; $('empty').hidden = false; $('copy').disabled = true; $('copy-text').value = ''; $('copy-text').hidden = true; $('copy-label').hidden = true; status('清单或规则已更新，请重新核对。'); }
+function renderList(id, label, items) { const list = $(id); list.replaceChildren(); $(id+'-heading').textContent = label + ' · ' + items.length + ' 项'; $(id+'-none').hidden = items.length > 0; for (const text of items) { const li = document.createElement('li'); li.textContent = text; list.append(li); } }
+function compare() { invalidate(); try { const r = compareChecklists($('expected').value,$('actual').value,$('ignore-case').checked); $('summary').textContent = r.missing.length || r.extra.length ? '缺少 ' + r.missing.length + ' 项 · 多出 ' + r.extra.length + ' 项' : '两份清单的项目一致'; $('counts').textContent = r.counts; $('duplicates').textContent = r.duplicates; renderList('missing','缺少',r.missing); renderList('extra','多出',r.extra); renderList('common','共有',r.common); $('copy-text').value = r.text; $('empty').hidden = true; $('result').hidden = false; $('copy').disabled = false; status('已核对；重复项只计一次，请按提示确认数量。'); } catch(error) { status(error.message,true); } }
+$('expected').addEventListener('input',invalidate); $('actual').addEventListener('input',invalidate); $('ignore-case').addEventListener('change',invalidate); $('compare').addEventListener('click',compare);
+$('example').addEventListener('click',()=>{ $('expected').value='牙刷\n牙膏\n充电器\n水杯\nUSB 线';$('actual').value='牙刷\n充电器\nusb 线\n纸巾\n牙刷';$('ignore-case').checked=true;compare(); });
+$('swap').addEventListener('click',()=>{ const previous=$('expected').value;$('expected').value=$('actual').value;$('actual').value=previous;invalidate();status('两份清单已交换，请重新核对方向。'); });
+$('clear').addEventListener('click',()=>{ $('expected').value='';$('actual').value='';invalidate();status('已清空两份清单。');$('expected').focus(); });
+$('copy').addEventListener('click',async()=>{const ticket=revision,text=$('copy-text').value;if(!text)return;try{await navigator.clipboard.writeText(text);if(ticket===revision)status('完整核对结果已复制。');}catch{if(ticket===revision){$('copy-text').hidden=false;$('copy-label').hidden=false;$('copy-text').focus();$('copy-text').select();status('无法自动复制，请复制已选中的完整结果。');}}});
+document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();compare();}});
+</script>
+</body></html>
