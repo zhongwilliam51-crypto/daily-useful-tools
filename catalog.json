@@ -108,5 +108,15 @@
     "path": "list-compare.html",
     "category": "日常核对",
     "test": "node --test test-list-compare.mjs"
+  },
+  {
+    "id": 12,
+    "date": "2026-10-31",
+    "slug": "file-checksum",
+    "title": "文件校验器 / File Checksum",
+    "problem": "下载或备份文件后，需要核对内容是否与来源提供的 SHA-256 校验值一致",
+    "path": "file-checksum.html",
+    "category": "日常文件",
+    "test": "node --test test-file-checksum.mjs"
   }
 ]

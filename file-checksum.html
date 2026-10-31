@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="在浏览器本地计算文件 SHA-256，与提供的校验值核对下载或备份后的内容是否一致。不上传、无注册、可离线使用。">
+<meta name="referrer" content="no-referrer"><title>文件校验器 · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,input,textarea{font:inherit;outline-offset:4px}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--orange)}header{max-width:1120px;margin:auto;padding:25px 30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:13px}header a{text-decoration:none}.brand{font-weight:750;letter-spacing:.06em}.edition{color:var(--muted)}main{max-width:1120px;margin:auto;padding:38px 30px}.eyebrow{font-size:12px;color:var(--orange);letter-spacing:.15em;font-weight:750}h1{font-size:clamp(34px,6vw,58px);line-height:1.22;letter-spacing:-.04em;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{color:var(--muted);max-width:640px;margin-bottom:28px}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.panel{min-width:0;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--white)}.panel h2{font-size:14px;margin:0 0 20px}label{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}input,textarea{min-width:0;width:100%;border:1px solid var(--line);border-radius:7px;padding:12px;background:var(--white);color:var(--ink);font-size:14px}input[type=file]{padding:10px;overflow:hidden;min-height:48px}input::file-selector-button{border:0;border-radius:4px;background:#edf0e8;color:var(--ink);padding:8px 10px;margin-right:10px;font:inherit;cursor:pointer}#expected{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px}.hint{font-size:12px;color:var(--muted);margin:10px 0 20px;overflow-wrap:anywhere}.actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:18px}button{cursor:pointer}.button{border:1px solid var(--line);border-radius:7px;padding:10px 16px;min-height:44px;background:var(--white);color:var(--ink);font-size:13px;font-weight:650}.primary{background:var(--ink);color:white;border-color:var(--ink)}.textbutton{border:0;background:none;color:var(--muted);font-size:12px;padding:8px 0;text-decoration:underline;text-underline-offset:4px}button:disabled{opacity:.4;cursor:default}#status{font-size:13px;min-height:24px;margin:18px 0 0}.error{color:#a33c26}.results{background:#eef2e8}#empty{color:var(--muted);font-size:14px;padding:20px 0}.verdict{font-size:27px;font-weight:750;line-height:1.4;margin:0 0 10px}.verdict[data-match="false"]{color:#a33c26}.verdict[data-match="true"]{color:var(--ink)}#filename,#byte-size{font-size:13px;color:var(--muted);overflow-wrap:anywhere;margin:6px 0}.digest{margin:20px 0;padding:18px;background:var(--white);border:1px solid var(--line);border-radius:9px}.digest h3{font-size:12px;color:var(--muted);margin:0 0 10px}#hash{font:16px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;word-break:break-all;user-select:all}#comparison{font-size:13px;overflow-wrap:anywhere;color:var(--muted)}#copy-label{margin-top:16px}#copy-text{min-height:180px;resize:vertical;font-size:12px}.notes{font-size:12px;color:var(--muted);margin:26px 0 32px;max-width:950px}.notes p{margin:7px 0}footer{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:12px}@media(max-width:720px){.workspace{grid-template-columns:1fr}.edition{display:none}main{padding:30px 20px}header{padding:20px}.panel{padding:20px}footer{flex-direction:column;gap:6px}.verdict{font-size:25px}}
+</style></head><body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">012 / EVERYDAY FILES</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main><div class="eyebrow">小工具，解决一个真问题。</div><h1>文件下好了，<br><span>内容真的一致吗？</span></h1><p class="intro">下载或备份之后，用 SHA-256 核对文件内容。选择一个文件，粘贴来源提供的校验值；没有校验值，也可以先计算一份，留作以后比对。</p>
+<div class="workspace"><section class="panel" aria-labelledby="input-heading"><h2 id="input-heading">01 / 选择文件与核对值</h2><label for="file">选择要核对的文件 · 单个最多 64 MiB</label><input id="file" type="file" aria-describedby="file-info"><p class="hint" id="file-info">文件只在当前浏览器读取，不会上传。支持空文件和任意文件类型。</p><label for="expected">预期 SHA-256 · 可留空</label><input id="expected" type="text" placeholder="粘贴 64 位十六进制字符" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="expected-hint"><p class="hint" id="expected-hint">只粘贴校验值，不含文件名、SHA256: 前缀或命令；忽略首尾空白和英文字母大小写。</p><div class="actions"><button type="button" class="button primary" id="calculate">计算并核对 ↗</button><button type="button" class="textbutton" id="example">试试示例</button><button type="button" class="textbutton" id="clear">清空</button></div><p id="status" role="status" aria-live="polite">选择文件后开始；⌘ / Ctrl + Enter 也可计算。</p></section>
+<section class="panel results" aria-labelledby="result-heading"><h2 id="result-heading">02 / 文件指纹与核对结果</h2><p id="empty">计算结果会显示在这里。</p><div id="result" hidden><p class="verdict" id="verdict"></p><p id="filename"></p><p id="byte-size"></p><div class="digest"><h3>SHA-256 · 64 位十六进制</h3><div id="hash"></div></div><p id="comparison"></p></div><div class="actions"><button type="button" class="button" id="copy-hash" disabled>复制 SHA-256</button><button type="button" class="textbutton" id="copy-report" disabled>复制完整结果</button></div><label id="copy-label" for="copy-text" hidden>手动复制</label><textarea id="copy-text" readonly hidden spellcheck="false"></textarea></section></div>
+<div class="notes"><p>使用浏览器内置 Web Crypto 计算 SHA-256，只读取文件内容，不把文件名、修改时间或路径加入摘要。同一份内容改名后，校验值仍相同；换行或任何字节不同都会影响结果。</p><p>最多 64 MiB（67,108,864 字节），一次一个文件。计算时需要将文件读入内存；大文件请用设备自带的命令行工具。修改文件选择、预期值或清空后会清除旧结果；较早的计算不会覆盖新选择。</p><p>“一致”表示所算 SHA-256 与输入值相同，并不能单独证明文件来源可信或没有恶意内容。请从可信来源获取预期校验值。</p><p>“试试示例”在本地生成一个内容恰为 abc、没有换行的 3 字节文本文件，并填入对应校验值；不会下载示例或修改你的文件。</p><p>无需注册、不上传、不保存历史。刷新或关闭会丢弃当前结果。可下载页面离线使用；需要浏览器支持 Web Crypto，HTTPS 或本机可信环境下可用，不支持时会明确提示。</p></div><footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer></main>
+<script id="file-checksum-core">
+const CHECKSUM_MAX_BYTES = 64 * 1024 * 1024;
+function checksumExpected(raw) {
+  if (typeof raw !== 'string') throw new Error('预期校验值须为文字。');
+  const text = raw.trim();
+  if (text && !/^[a-fA-F0-9]{64}$/.test(text)) throw new Error('预期 SHA-256 须为 64 位十六进制字符；请去掉文件名、前缀或行内空格。');
+  return text.toLowerCase();
+}
+function checksumFileValid(file) {
+  if (!file || typeof file.name !== 'string' || typeof file.arrayBuffer !== 'function' || !Number.isSafeInteger(file.size) || file.size < 0) throw new Error('请先选择一个有效文件。');
+  if (file.size > CHECKSUM_MAX_BYTES) throw new Error('文件超过 64 MiB（67,108,864 字节），请改用本机工具处理大文件。');
+}
+function checksumSize(bytes) {
+  const exact = String(bytes).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' 字节';
+  return bytes < 1024 ? exact : (bytes < 1048576 ? (bytes / 1024).toFixed(2) + ' KiB' : (bytes / 1048576).toFixed(2) + ' MiB') + '（' + exact + '）';
+}
+async function hashLocalFile(file, rawExpected = '', subtle = globalThis.crypto?.subtle) {
+  checksumFileValid(file); const expected = checksumExpected(rawExpected);
+  if (!subtle || typeof subtle.digest !== 'function') throw new Error('此浏览器或当前环境无法使用 Web Crypto，请用支持的浏览器打开 HTTPS 页面或本机可信页面。');
+  let bytes;
+  try { bytes = await file.arrayBuffer(); } catch { throw new Error('无法读取文件，请重新选择并确认文件仍可访问。'); }
+  if (!(bytes instanceof ArrayBuffer) || bytes.byteLength !== file.size) throw new Error('读取的字节数与文件大小不一致，请重新选择文件。');
+  let digest;
+  try { digest = await subtle.digest('SHA-256', bytes); } catch { throw new Error('SHA-256 计算失败，请重试或更换支持 Web Crypto 的浏览器。'); }
+  if (!(digest instanceof ArrayBuffer) || digest.byteLength !== 32) throw new Error('浏览器返回了无效的 SHA-256 结果。');
+  const hash = Array.from(new Uint8Array(digest), n => n.toString(16).padStart(2, '0')).join('');
+  const match = expected ? hash === expected : null;
+  const verdict = match === null ? '已计算，尚未核对' : match ? '校验值一致' : '校验值不一致';
+  const name = file.name || '未命名文件', sizeText = checksumSize(bytes.byteLength);
+  const text = '文件 SHA-256 核对\n文件：' + name + '\n大小：' + sizeText + '\nSHA-256：' + hash + '\n预期值：' + (expected || '未提供') + '\n结果：' + verdict + '\n\n摘要只包含文件内容；校验值相同不能单独证明来源可信或文件安全。';
+  return {hash, expected, match, verdict, name, sizeText, byteLength:bytes.byteLength, text};
+}
+</script><script>
+const $ = id => document.getElementById(id); let activeFile = null, revision = 0, currentResult = null;
+function status(message, error = false) { $('status').textContent = message; $('status').className = error ? 'error' : ''; }
+function invalidate() { revision++; currentResult = null; $('result').hidden = true; $('empty').hidden = false; $('copy-hash').disabled = true; $('copy-report').disabled = true; $('calculate').disabled = false; $('copy-text').value = ''; $('copy-text').hidden = true; $('copy-label').hidden = true; status('文件或核对值已更新，请重新计算。'); }
+function fileInfo(example = false) { $('file-info').textContent = activeFile ? (example ? '本地示例：' : '已选：') + (activeFile.name || '未命名文件') + ' · ' + checksumSize(activeFile.size) : '文件只在当前浏览器读取，不会上传。支持空文件和任意文件类型。'; }
+async function calculate() {
+  invalidate(); const ticket = revision, file = activeFile, expected = $('expected').value; $('calculate').disabled = true; status('正在本地读取并计算 SHA-256…');
+  try { const r = await hashLocalFile(file, expected); if (ticket !== revision) return;
+    currentResult = r; $('verdict').textContent = r.verdict; $('verdict').dataset.match = String(r.match); $('filename').textContent = '文件：' + r.name; $('byte-size').textContent = '大小：' + r.sizeText; $('hash').textContent = r.hash; $('comparison').textContent = r.match === null ? '未提供预期值，当前只计算文件摘要。' : r.match ? '文件摘要与输入的预期值相同。' : '文件摘要与输入值不同，请核对所选文件和预期值。'; $('empty').hidden = true; $('result').hidden = false; $('copy-hash').disabled = false; $('copy-report').disabled = false; status('已完成本地计算。' + (r.match === false ? '校验值不一致，请核对。' : ''), r.match === false);
+  } catch(error) { if(ticket === revision) status(error.message, true); } finally { if(ticket === revision) $('calculate').disabled = false; }
+}
+$('file').addEventListener('change',()=>{activeFile=$('file').files[0]||null;invalidate();fileInfo();}); $('expected').addEventListener('input',invalidate); $('calculate').addEventListener('click',calculate);
+$('example').addEventListener('click',()=>{ $('file').value='';activeFile=new File(['abc'],'example-abc.txt',{type:'text/plain'});$('expected').value='ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';fileInfo(true);calculate(); });
+$('clear').addEventListener('click',()=>{activeFile=null;$('file').value='';$('expected').value='';invalidate();fileInfo();status('已清空文件选择和校验值。');});
+async function copyResult(report) { if(!currentResult)return;const ticket=revision,text=report?currentResult.text:currentResult.hash;try { await navigator.clipboard.writeText(text);if(ticket===revision)status(report?'完整核对结果已复制。':'SHA-256 已复制。'); } catch { if(ticket===revision){$('copy-text').value=text;$('copy-text').hidden=false;$('copy-label').hidden=false;$('copy-text').focus();$('copy-text').select();status('无法自动复制，请复制已选中的结果。');} } }
+$('copy-hash').addEventListener('click',()=>copyResult(false));$('copy-report').addEventListener('click',()=>copyResult(true));
+document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();calculate();}});
+</script></body></html>
