@@ -118,5 +118,15 @@
     "path": "file-checksum.html",
     "category": "日常文件",
     "test": "node --test test-file-checksum.mjs"
+  },
+  {
+    "id": 13,
+    "date": "2026-11-01",
+    "slug": "calendar-event",
+    "title": "日历事件生成器 / Calendar Event",
+    "problem": "活动时间、地点和备注需要在不同日历中重复手填，希望一次生成可导入的日历文件",
+    "path": "calendar-event.html",
+    "category": "日常日程",
+    "test": "node --test test-calendar-event.mjs"
   }
 ]

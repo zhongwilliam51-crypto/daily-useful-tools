@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="填写活动名称、时间与地点，本地生成可导入日历的 .ics 文件。支持固定 UTC+08:00 时间和全天活动，无注册、不上传。"><meta name="referrer" content="no-referrer"><title>日历事件生成器 · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light;--paper:#f5f3ea;--ink:#243b31;--muted:#647269;--line:#d5dbcf;--orange:#c65730;--white:#fffef9}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"PingFang SC",sans-serif}a{color:inherit;text-underline-offset:5px}button,input,textarea,summary{font:inherit;outline-offset:4px}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--orange)}header{max-width:1120px;margin:auto;padding:25px 30px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:13px}header a{text-decoration:none}.brand{font-weight:750;letter-spacing:.06em}.edition{color:var(--muted)}main{max-width:1120px;margin:auto;padding:38px 30px}.eyebrow{font-size:12px;color:var(--orange);letter-spacing:.15em;font-weight:750}h1{font-size:clamp(34px,6vw,58px);line-height:1.22;letter-spacing:-.04em;margin:16px 0 20px}h1 span{color:var(--orange)}.intro{color:var(--muted);max-width:640px;margin-bottom:28px}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.panel{min-width:0;border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--white)}.panel h2{font-size:14px;margin:0 0 20px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{min-width:0}.wide{grid-column:1/-1}label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}input,textarea{min-width:0;width:100%;border:1px solid var(--line);border-radius:7px;padding:11px 12px;min-height:44px;background:var(--white);color:var(--ink);font-size:14px}textarea{resize:vertical;line-height:1.7;min-height:110px}.check{display:flex;gap:9px;align-items:center;min-height:32px;margin:0}.check input{width:18px;min-height:18px;height:18px;accent-color:var(--ink)}.hint{font-size:12px;color:var(--muted);margin:0}.actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:18px}button{cursor:pointer}.button{border:1px solid var(--line);border-radius:7px;padding:10px 16px;min-height:44px;background:var(--white);color:var(--ink);font-size:13px;font-weight:650}.primary{background:var(--ink);color:white;border-color:var(--ink)}.textbutton{border:0;background:none;color:var(--muted);font-size:12px;padding:8px 0;text-decoration:underline;text-underline-offset:4px}button:disabled{opacity:.4;cursor:default}#status{font-size:13px;min-height:24px;margin:18px 0 0}.error{color:#a33c26}.results{background:#eef2e8}#empty{color:var(--muted);font-size:14px;padding:20px 0}#event-title{font-size:27px;line-height:1.4;letter-spacing:-.03em;margin:0 0 18px;overflow-wrap:anywhere}.event-card{border:1px solid var(--line);border-radius:9px;padding:20px;background:var(--white)}.meta{font-size:13px;color:var(--muted);margin:8px 0;overflow-wrap:anywhere;white-space:pre-wrap}#event-rule{color:var(--orange)}details{margin-top:20px}summary{font-size:12px;cursor:pointer;color:var(--muted)}#ics-preview{margin-top:12px;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;min-height:240px}#copy-label{margin-top:16px}#copy-text{min-height:170px;font-size:12px}.notes{font-size:12px;color:var(--muted);margin:26px 0 32px;max-width:950px}.notes p{margin:7px 0}footer{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:12px}@media(max-width:720px){.workspace{grid-template-columns:1fr}.edition{display:none}main{padding:30px 20px}header{padding:20px}.panel{padding:20px}.fields{gap:14px}footer{flex-direction:column;gap:6px}#event-title{font-size:25px}}@media(max-width:380px){.fields{grid-template-columns:1fr}.wide{grid-column:auto}}
+</style></head><body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span class="edition">013 / EVERYDAY EVENTS</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main><div class="eyebrow">小工具，解决一个真问题。</div><h1>活动填一次，<br><span>放进你的日历。</span></h1><p class="intro">把时间、地点和备注整理成一个 .ics 文件，下载后在手机或电脑日历中打开、导入。先看预览，再决定是否加入日程。</p>
+<div class="workspace"><section class="panel" aria-labelledby="input-heading"><h2 id="input-heading">01 / 填写一件事</h2><div class="fields">
+<div class="field wide"><label for="title">活动名称 · 必填，最多 80 字</label><input id="title" type="text" placeholder="例如：小组讨论" autocomplete="off"></div>
+<label class="check wide"><input id="all-day" type="checkbox">全天活动</label><p id="timezone" class="hint wide">时间固定按 UTC+08:00 输入；文件会转换为 UTC，日历按自己的显示时区换算。</p>
+<div class="field"><label for="start-date">开始日期</label><input id="start-date" type="date" min="1900-01-01" max="2100-12-31"></div><div class="field" id="start-time-field"><label for="start-time">开始时间 · UTC+08:00</label><input id="start-time" type="time" value="09:00" step="60"></div>
+<div class="field"><label for="end-date" id="end-date-label">结束日期</label><input id="end-date" type="date" min="1900-01-01" max="2100-12-31"></div><div class="field" id="end-time-field"><label for="end-time">结束时间 · UTC+08:00</label><input id="end-time" type="time" value="10:00" step="60"></div>
+<div class="field wide"><label for="location">地点 · 可留空，最多 120 字</label><input id="location" type="text" placeholder="例如：社区活动室" autocomplete="off"></div><div class="field wide"><label for="description">备注 · 可留空，最多 2,000 字</label><textarea id="description" placeholder="例如：带上笔记本。" spellcheck="false"></textarea></div></div>
+<div class="actions"><button type="button" class="button primary" id="generate">生成并预览 ↗</button><button type="button" class="textbutton" id="example">试试示例</button><button type="button" class="textbutton" id="clear">清空</button></div><p id="status" role="status" aria-live="polite">填写名称和起止日期后生成；⌘ / Ctrl + Enter 也可使用。</p></section>
+<section class="panel results" aria-labelledby="result-heading"><h2 id="result-heading">02 / 导入前确认</h2><p id="empty">活动预览会显示在这里。</p><div id="result" hidden><div class="event-card"><h3 id="event-title"></h3><p id="event-dates" class="meta"></p><p id="event-rule" class="meta"></p><p id="event-location" class="meta"></p><p id="event-description" class="meta"></p></div><p class="hint" style="margin-top:16px">下载后在支持 .ics 的日历应用中打开或选择“导入”。若应用没有提供导入入口，可换用其网页版或电脑客户端。本工具不直接写入日历，也不设置通知。</p><details id="raw-details"><summary>查看 .ics 文件内容</summary><textarea id="ics-preview" readonly aria-label="日历文件内容" spellcheck="false"></textarea></details></div>
+<div class="actions"><button type="button" class="button" id="download" disabled>下载日历文件</button><button type="button" class="textbutton" id="copy" disabled>复制活动信息</button></div><label for="copy-text" id="copy-label" hidden>手动复制活动信息</label><textarea id="copy-text" readonly hidden spellcheck="false"></textarea></section></div>
+<div class="notes"><p>定时活动按固定 UTC+08:00 解释，不查询地区时区或夏令时规则。结束须晚于开始，跨午夜请将结束日期选为下一天。导入后请核对日历显示时区。</p><p>全天活动的结束日期包含当天，例如 11 月 1–3 日会覆盖三天；文件内部会按日历格式写成 11 月 4 日结束。全天日期不做时区换算。</p><p>日期范围为 1900-01-01 至 2100-12-31，时间精确到分钟。文本字数按 Unicode 码点计算；不接受单行字段中的换行、控制字符或无效 Unicode，超限会报错，不截断。备注支持多行。</p><p>一次只生成一件事，无重复规则、提醒或邀请。重复导入可能产生重复事件，请在日历中确认。修改任何输入后清除旧结果；清空或刷新会丢弃输入。</p><p>全部在当前浏览器生成，不上传、不保存活动。页面无外部依赖，可下载后离线使用。文件使用 UTF-8 与 <a href="https://www.rfc-editor.org/rfc/rfc5545.html">iCalendar 格式</a>；日历应用的导入入口和行为可能不同。</p></div>
+<footer><span>每天一个实用小工具。Built with care, kept simple.</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools#readme">使用说明与源码 ↗</a></footer></main>
+<script id="calendar-event-core">
+function calendarDate(raw, label) {
+  if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) throw new Error(label + '须为完整日期。');
+  const [y,m,d] = raw.split('-').map(Number), stamp = Date.UTC(y,m-1,d), date = new Date(stamp);
+  if (y < 1900 || y > 2100 || date.getUTCFullYear() !== y || date.getUTCMonth() !== m-1 || date.getUTCDate() !== d) throw new Error(label + '须为 1900–2100 年内有效的公历日期。');
+  return stamp;
+}
+function calendarMinutes(raw, label) {
+  if (typeof raw !== 'string' || !/^\d{2}:\d{2}$/.test(raw)) throw new Error(label + '须为 HH:MM 格式。');
+  const [h,m] = raw.split(':').map(Number);
+  if (h > 23 || m > 59) throw new Error(label + '须在 00:00–23:59 之间。');
+  return h*60+m;
+}
+function calendarText(raw, label, limit, multiline = false, required = false) {
+  if (typeof raw !== 'string') throw new Error(label + '须为文字。');
+  if ((multiline ? /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/ : /[\u0000-\u001f\u007f]/).test(raw)) throw new Error(label + '含不支持的控制字符或换行。');
+  const text = raw.replace(/\r\n|\r/g,'\n').trim();
+  const points = [...text];
+  if (points.some(ch => ch.codePointAt(0) >= 0xd800 && ch.codePointAt(0) <= 0xdfff)) throw new Error(label + '含无效 Unicode 字符。');
+  if (required && !text) throw new Error('请填写' + label + '。');
+  if (points.length > limit) throw new Error(label + '最多 ' + limit + ' 字，请缩短后重试。');
+  return text;
+}
+function calendarEscape(text) { return text.replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;'); }
+function calendarFold(line) {
+  const encoder = new TextEncoder(), out = []; let part = '', bytes = 0;
+  for (const char of line) { const n = encoder.encode(char).length; if (bytes+n > 75) { out.push(part);part=' ';bytes=1; } part+=char;bytes+=n; }
+  out.push(part);return out.join('\r\n');
+}
+function calendarUTC(stamp) { return new Date(stamp).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'); }
+function createCalendarUID() {
+  if (typeof globalThis.crypto?.randomUUID !== 'function') throw new Error('此浏览器无法生成事件标识，请使用支持的浏览器或 HTTPS 页面。');
+  return globalThis.crypto.randomUUID() + '@daily-useful-tools.invalid';
+}
+function makeCalendarEvent(input, options = {}) {
+  if (!input || typeof input.allDay !== 'boolean') throw new Error('请选择有效的活动类型。');
+  const title = calendarText(input.title,'活动名称',80,false,true), location = calendarText(input.location,'地点',120), description = calendarText(input.description,'备注',2000,true);
+  const first = calendarDate(input.startDate,'开始日期'), last = calendarDate(input.endDate,'结束日期');
+  let start, end, dates, rule;
+  if (input.allDay) {
+    if (last < first) throw new Error('全天活动的结束日期不能早于开始日期。');
+    start = input.startDate.replace(/-/g,'');end = new Date(last+86400000).toISOString().slice(0,10).replace(/-/g,'');
+    dates = input.startDate + ' → ' + input.endDate + '（共 ' + ((last-first)/86400000+1) + ' 天）';rule = '全天活动，包含结束日期，不做时区换算。';
+  } else {
+    const a = first + calendarMinutes(input.startTime,'开始时间')*60000 - 8*3600000, b = last + calendarMinutes(input.endTime,'结束时间')*60000 - 8*3600000;
+    if (b <= a) throw new Error('结束时间须晚于开始；跨午夜请将结束日期选为下一天。');
+    start = calendarUTC(a);end = calendarUTC(b);dates = input.startDate + ' ' + input.startTime + ' → ' + input.endDate + ' ' + input.endTime;rule = '输入按 UTC+08:00，文件写入 UTC；日历按其显示时区换算。';
+  }
+  const uid = options.uid === undefined ? createCalendarUID() : options.uid, now = options.now === undefined ? new Date() : options.now;
+  if (typeof uid !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9.@_-]{0,119}$/.test(uid)) throw new Error('无法生成有效的事件标识，请重试。');
+  if (!(now instanceof Date) || !Number.isFinite(now.getTime()) || now.getUTCFullYear()<1 || now.getUTCFullYear()>9999) throw new Error('设备时间无效，请检查后重试。');
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daily Useful Tools//Calendar Event//ZH','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+calendarUTC(now.getTime()),'DTSTART'+(input.allDay?';VALUE=DATE':'')+':'+start,'DTEND'+(input.allDay?';VALUE=DATE':'')+':'+end,'SUMMARY:'+calendarEscape(title)];
+  if (location) lines.push('LOCATION:'+calendarEscape(location));if (description) lines.push('DESCRIPTION:'+calendarEscape(description));lines.push('END:VEVENT','END:VCALENDAR');
+  const ics = lines.map(calendarFold).join('\r\n')+'\r\n', filename = 'calendar-event-'+input.startDate.replace(/-/g,'')+'.ics';
+  const text = title+'\n'+dates+'\n'+rule+(location?'\n地点：'+location:'')+(description?'\n备注：'+description:'')+'\n\n未设置提醒或邀请；请在日历导入后核对。';
+  return {title, location, description, dates, rule, ics, filename, uid, start, end, text};
+}
+</script><script>
+const $ = id => document.getElementById(id); let currentResult = null, downloadURL = null, revision = 0;
+function status(message,error=false) { $('status').textContent=message;$('status').className=error?'error':''; }
+function invalidate() { revision++;currentResult=null;if(downloadURL){URL.revokeObjectURL(downloadURL);downloadURL=null;}$('result').hidden=true;$('empty').hidden=false;$('download').disabled=true;$('copy').disabled=true;$('ics-preview').value='';$('raw-details').open=false;$('copy-text').value='';$('copy-text').hidden=true;$('copy-label').hidden=true;status('活动已更新，请重新生成。'); }
+function mode() { const all=$('all-day').checked;for(const id of ['start-time','end-time']){$(id+'-field').hidden=all;$(id).disabled=all;}$('end-date-label').textContent=all?'结束日期 · 含当天':'结束日期';$('timezone').textContent=all?'全天活动按日期记录，开始与结束日期均计入。':'时间固定按 UTC+08:00 输入；文件会转换为 UTC，日历按自己的显示时区换算。'; }
+function defaults() { const day=new Date(Date.now()+8*3600000).toISOString().slice(0,10);$('start-date').value=day;$('end-date').value=day;$('start-time').value='09:00';$('end-time').value='10:00';$('all-day').checked=false;for(const id of ['title','location','description'])$(id).value='';mode(); }
+function generate() { invalidate();try{const r=makeCalendarEvent({title:$('title').value,location:$('location').value,description:$('description').value,allDay:$('all-day').checked,startDate:$('start-date').value,endDate:$('end-date').value,startTime:$('start-time').value,endTime:$('end-time').value});currentResult=r;$('event-title').textContent=r.title;$('event-dates').textContent=r.dates;$('event-rule').textContent=r.rule;$('event-location').textContent=r.location?'地点：'+r.location:'未填写地点';$('event-description').textContent=r.description?'备注：'+r.description:'未填写备注';$('ics-preview').value=r.ics;$('copy-text').value=r.text;$('empty').hidden=true;$('result').hidden=false;$('download').disabled=false;$('copy').disabled=false;status('已生成，请确认预览后下载并导入日历。');}catch(error){status(error.message,true);} }
+for(const id of ['title','location','description','start-date','end-date','start-time','end-time'])$(id).addEventListener('input',invalidate);$('all-day').addEventListener('change',()=>{mode();invalidate();});$('generate').addEventListener('click',generate);
+$('example').addEventListener('click',()=>{$('title').value='小组讨论';$('start-date').value='2026-11-02';$('end-date').value='2026-11-02';$('start-time').value='14:30';$('end-time').value='15:30';$('location').value='社区活动室';$('description').value='带上笔记本。\n讨论下周安排。';$('all-day').checked=false;mode();generate();});
+$('clear').addEventListener('click',()=>{defaults();invalidate();status('已清空，日期恢复为 UTC+08:00 的今天。');});
+$('download').addEventListener('click',()=>{if(!currentResult)return;try{if(!downloadURL)downloadURL=URL.createObjectURL(new Blob([currentResult.ics],{type:'text/calendar;charset=utf-8'}));const a=document.createElement('a');a.href=downloadURL;a.download=currentResult.filename;document.body.append(a);a.click();a.remove();status('已请求下载 '+currentResult.filename+'，请在日历应用中导入并确认。');}catch{$('raw-details').open=true;$('ics-preview').focus();$('ics-preview').select();status('无法自动下载，可将已选中的内容按 UTF-8 保存为 .ics 文件。');}});
+$('copy').addEventListener('click',async()=>{if(!currentResult)return;const ticket=revision,text=currentResult.text;try{await navigator.clipboard.writeText(text);if(ticket===revision)status('活动信息已复制。');}catch{if(ticket===revision){$('copy-text').hidden=false;$('copy-label').hidden=false;$('copy-text').focus();$('copy-text').select();status('无法自动复制，请复制已选中的活动信息。');}}});
+document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();generate();}});defaults();
+</script></body></html>
