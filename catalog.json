@@ -128,5 +128,15 @@
     "path": "calendar-event.html",
     "category": "日常日程",
     "test": "node --test test-calendar-event.mjs"
+  },
+  {
+    "id": 14,
+    "date": "2026-11-02",
+    "slug": "wifi-qr",
+    "title": "Wi-Fi 共享二维码 / Wi-Fi QR",
+    "problem": "访客连接 Wi-Fi 时需要手抄长密码，中文名称和特殊字符容易输错",
+    "path": "wifi-qr.html",
+    "category": "日常连接",
+    "test": "node --test test-wifi-qr.mjs"
   }
 ]
