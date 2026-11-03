@@ -138,5 +138,15 @@
     "path": "wifi-qr.html",
     "category": "日常连接",
     "test": "node --test test-wifi-qr.mjs"
+  },
+  {
+    "id": 15,
+    "date": "2026-11-03",
+    "slug": "leave-plan",
+    "title": "出门时间倒推器 / Leave Plan",
+    "problem": "出门前容易低估洗漱、早餐与收包的时间，需要从约定到达时刻倒推准备和出门时间",
+    "path": "leave-plan.html",
+    "category": "日常出行",
+    "test": "node --test test-leave-plan.mjs"
   }
 ]
