@@ -148,5 +148,15 @@
     "path": "leave-plan.html",
     "category": "日常出行",
     "test": "node --test test-leave-plan.mjs"
+  },
+  {
+    "id": 16,
+    "date": "2026-11-05",
+    "slug": "contact-card",
+    "title": "联系人名片生成器 / Contact Card",
+    "problem": "在手机和电脑之间保存联系人时需要反复输入姓名、电话和邮箱，希望一次生成可导入通讯录的文件",
+    "path": "contact-card.html",
+    "category": "日常联系",
+    "test": "node --test test-contact-card.mjs"
   }
 ]
