@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="核对简介、标题或表单的字数和 UTF-8 字节限制，按完整字符裁剪文本。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>文本限额裁剪器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: #a64526; font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+textarea, input, select, button { font: inherit; }
+textarea, input, select { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+textarea { display: block; min-height: 146px; resize: vertical; overflow-wrap: anywhere; }
+textarea[readonly] { min-height: 146px; }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+button:disabled { opacity: .48; cursor: default; }
+:focus-visible { outline: 2px solid #a64526; outline-offset: 3px; }
+.note, #status, #metrics { font-size: 14px; }
+#status { margin: 12px 0 0; min-height: 2em; }
+#status[data-error] { color: #9d2c22; }
+#metrics { margin: 12px 0 0; white-space: pre-line; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 360px) { .controls { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>017 / TEXT LIMITS</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">数字生活</div>
+  <h1>文本限额裁剪器</h1>
+  <p class="intro">简介、标题或表单超长了？粘贴文字，按目标上限保留最长的一段开头，组合 emoji 不会被拆开。</p>
+
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 粘贴文本</h2>
+      <label for="source">原文</label>
+      <textarea id="source" autocomplete="off" spellcheck="false" dir="auto" placeholder="把简介、标题或表单内容贴到这里"></textarea>
+      <div class="controls">
+        <div>
+          <label for="unit">计数方式</label>
+          <select id="unit">
+            <option value="characters">字符（字素簇）</option>
+            <option value="bytes">UTF-8 字节</option>
+            <option value="units">UTF-16 码元</option>
+          </select>
+        </div>
+        <div>
+          <label for="limit">最大长度</label>
+          <input id="limit" type="text" inputmode="numeric" value="80" autocomplete="off">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="calculate" type="button">检查并裁剪 ↗</button>
+        <button id="example" type="button">试试示例</button>
+        <button id="clear" type="button">清空原文</button>
+      </div>
+      <p class="note">上限可填 0–100,000 的整数。原文最多 20,000 个 UTF-16 码元。</p>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 核对并复制</h2>
+      <label for="output">保留的文本</label>
+      <textarea id="output" readonly dir="auto" placeholder="检查后在这里显示结果"></textarea>
+      <p id="metrics" hidden></p>
+      <div class="actions">
+        <button id="copy" type="button" disabled>复制结果</button>
+      </div>
+      <p id="status" role="status">原文保持不变，处理在当前浏览器完成。</p>
+    </section>
+  </div>
+  <p class="note">字符按字素簇计，空格和换行也计入。网页输入框把换行统一为 LF。选择目标网站要求的计数方式，实际限制以该网站为准。</p>
+  <footer>无需注册或上传。下载本页后可离线使用，需要浏览器支持 Intl.Segmenter。</footer>
+</main>
+
+<script id="text-limit-core">
+const maxSourceUnits = 20000;
+const maxLimit = 100000;
+
+function fitText(source, rawLimit, unit) {
+  if (source.length > maxSourceUnits) {
+    throw new Error('原文超过 20,000 个 UTF-16 码元，请分段处理。');
+  }
+  const limit = Number(rawLimit.trim());
+  if (!/^[0-9]{1,6}$/.test(rawLimit.trim()) || limit > maxLimit) {
+    throw new Error('请输入 0–100,000 之间的整数上限。');
+  }
+  if (!['characters', 'bytes', 'units'].includes(unit)) {
+    throw new Error('请选择有效的计数方式。');
+  }
+  if (typeof Intl.Segmenter !== 'function') {
+    throw new Error('此浏览器不支持完整字符分割，请换用更新的浏览器。');
+  }
+
+  const segmenter = new Intl.Segmenter(undefined, {granularity: 'grapheme'});
+  const encoder = new TextEncoder();
+  const original = {characters: 0, bytes: 0, units: source.length};
+  const kept = {characters: 0, bytes: 0, units: 0};
+  let reachedLimit = false;
+
+  for (const {segment} of segmenter.segment(source)) {
+    const byteLength = encoder.encode(segment).length;
+    original.characters += 1;
+    original.bytes += byteLength;
+
+    const size = {characters: 1, bytes: byteLength, units: segment.length};
+    // Once a character will not fit, keep the prefix intact.
+    reachedLimit ||= kept[unit] + size[unit] > limit;
+    if (!reachedLimit) {
+      kept.characters += 1;
+      kept.bytes += byteLength;
+      kept.units += segment.length;
+    }
+  }
+
+  return {original, kept, limit, result: source.slice(0, kept.units)};
+}
+</script>
+<script>
+const source = document.getElementById('source');
+const unit = document.getElementById('unit');
+const limit = document.getElementById('limit');
+const output = document.getElementById('output');
+const metrics = document.getElementById('metrics');
+const copy = document.getElementById('copy');
+const status = document.getElementById('status');
+const unitLabels = {characters: '字符', bytes: '字节', units: '码元'};
+let resultVersion = 0;
+
+function showStatus(message, isError = false) {
+  status.textContent = message;
+  status.toggleAttribute('data-error', isError);
+}
+
+function clearResult(message = '输入已更新，请重新检查。') {
+  resultVersion += 1;
+  output.value = '';
+  metrics.textContent = '';
+  metrics.hidden = true;
+  copy.disabled = true;
+  showStatus(message);
+}
+
+function describe(counts) {
+  return counts.characters + ' 字符 · ' + counts.bytes + ' UTF-8 字节 · ' + counts.units + ' UTF-16 码元';
+}
+
+function calculate() {
+  clearResult();
+  try {
+    const fitted = fitText(source.value, limit.value, unit.value);
+    const removed = fitted.original.characters - fitted.kept.characters;
+    const remaining = fitted.limit - fitted.kept[unit.value];
+    output.value = fitted.result;
+    metrics.textContent = '原文：' + describe(fitted.original) + '\n结果：' + describe(fitted.kept);
+    metrics.hidden = false;
+    copy.disabled = fitted.result.length === 0;
+
+    if (source.value.length === 0) {
+      showStatus('原文为空，请粘贴要检查的文本。');
+    } else if (removed === 0) {
+      showStatus('原文符合上限，还可用 ' + remaining + ' ' + unitLabels[unit.value] + '。');
+    } else if (fitted.result.length === 0) {
+      showStatus('首个完整字符已超过上限，结果为空。');
+    } else {
+      showStatus('已裁去末尾 ' + removed + ' 个字符，还可用 ' + remaining + ' ' + unitLabels[unit.value] + '。');
+    }
+  } catch (error) {
+    showStatus(error.message, true);
+  }
+}
+
+for (const control of [source, unit, limit]) {
+  control.addEventListener('input', () => clearResult());
+}
+document.getElementById('calculate').addEventListener('click', calculate);
+document.getElementById('example').addEventListener('click', () => {
+  source.value = '周末见！👩🏽‍💻\n带上相机。';
+  unit.value = 'bytes';
+  limit.value = '20';
+  calculate();
+});
+document.getElementById('clear').addEventListener('click', () => {
+  source.value = '';
+  clearResult('已清空原文和结果。');
+  source.focus();
+});
+copy.addEventListener('click', async () => {
+  const version = resultVersion;
+  try {
+    await navigator.clipboard.writeText(output.value);
+    if (version === resultVersion) showStatus('已复制结果。');
+  } catch {
+    if (version !== resultVersion) return;
+    output.focus();
+    output.select();
+    showStatus('已选中结果，可按 Ctrl / ⌘ + C 手动复制。');
+  }
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    calculate();
+  }
+});
+</script>
+</body>
+</html>

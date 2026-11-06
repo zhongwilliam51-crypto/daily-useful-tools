@@ -158,5 +158,15 @@
     "path": "contact-card.html",
     "category": "日常联系",
     "test": "node --test test-contact-card.mjs"
+  },
+  {
+    "id": 17,
+    "date": "2026-11-06",
+    "slug": "text-limit",
+    "title": "文本限额裁剪器 / Text Limit",
+    "problem": "填写简介、标题或表单时，字数和字节限制不同，手动裁剪容易拆开组合字符",
+    "path": "text-limit.html",
+    "category": "数字生活",
+    "test": "node --test test-text-limit.mjs"
   }
 ]
