@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="按原稿、纸张和每边留白计算打印缩放比例，比较旋转前后的效果。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>打印缩放计算器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --white: #fffef9; --accent: #a64526; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--white); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+fieldset { border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
+legend { font-weight: 700; margin-bottom: 6px; padding: 0; }
+.dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+input, button { font: inherit; }
+input[type=text] { width: 100%; min-width: 0; color: inherit; background: var(--white); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+.option { display: flex; align-items: center; min-height: 44px; gap: 8px; margin: 8px 0; }
+.option input { margin: 0; width: 18px; height: 18px; accent-color: var(--ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--white); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note, #status, #comparison, #whole { font-size: 14px; }
+#status { margin: 0; }
+#status[data-error] { color: #9d2c22; }
+#scale { display: block; font-size: clamp(38px, 6vw, 56px); line-height: 1.1; letter-spacing: -.04em; color: var(--accent); font-weight: 800; overflow-wrap: anywhere; }
+#direction { font-weight: 700; margin: 10px 0; }
+#comparison, #whole, #size { margin: 7px 0; }
+figure { margin: 16px 0 0; }
+svg { display: block; width: 100%; height: 225px; }
+figcaption { margin-top: 8px; color: var(--muted); font-size: 12px; text-align: center; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>018 / PRINT SCALE</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">日常打印</div>
+  <h1>打印缩放计算器</h1>
+  <p class="intro">换张纸打印，缩放填多少？按原稿尺寸、纸张和留白计算比例，提前看清哪种方向能印得更大。</p>
+
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 填写尺寸</h2>
+      <form id="settings" autocomplete="off">
+        <fieldset>
+          <legend>原稿 · 毫米</legend>
+          <div class="dimensions">
+            <div><label for="source-width">原稿宽度</label><input id="source-width" type="text" inputmode="decimal" value="297"></div>
+            <div><label for="source-height">原稿高度</label><input id="source-height" type="text" inputmode="decimal" value="210"></div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>目标纸张 · 毫米</legend>
+          <div class="dimensions">
+            <div><label for="paper-width">纸张宽度</label><input id="paper-width" type="text" inputmode="decimal" value="148"></div>
+            <div><label for="paper-height">纸张高度</label><input id="paper-height" type="text" inputmode="decimal" value="210"></div>
+          </div>
+        </fieldset>
+        <label for="margin">每边留白 · 毫米</label>
+        <input id="margin" type="text" inputmode="decimal" value="5" aria-describedby="margin-help">
+        <p class="note" id="margin-help">留白包含打印机的不可打印区域。四边最小留白不同时，填其中最大值。</p>
+        <label class="option"><input id="allow-rotation" type="checkbox" checked> 比较旋转原稿 90° 的效果</label>
+        <div class="actions">
+          <button class="primary" type="submit">计算缩放 ↗</button>
+          <button id="example" type="button">恢复示例</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 打印设置</h2>
+      <p id="status" role="status">填好尺寸后计算比例。</p>
+      <div id="result" hidden>
+        <output id="scale" aria-label="建议缩放比例"></output>
+        <p id="direction"></p>
+        <p id="comparison"></p>
+        <p id="size"></p>
+        <p id="whole"></p>
+        <figure>
+          <svg id="preview" viewBox="0 0 1 1" role="img" aria-label="原稿在目标纸张上的居中示意">
+            <rect id="paper" fill="#fffef9" stroke="#738577" stroke-width="1" vector-effect="non-scaling-stroke"></rect>
+            <rect id="usable" fill="#e4ede0" stroke="#738577" stroke-width="1" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"></rect>
+            <rect id="placed" fill="#abc7ab" stroke="#3e654f" stroke-width="1" vector-effect="non-scaling-stroke"></rect>
+          </svg>
+          <figcaption>白底是纸张，虚线是可用区域，绿色是缩放后的原稿。</figcaption>
+        </figure>
+      </div>
+    </section>
+  </div>
+  <p class="note">在原文件的打印界面选目标纸张、核对原稿方向，再输入建议比例。示意图按居中摆放绘制，实际位置和边距请以打印预览为准。原稿尺寸包含文件自身留白。</p>
+  <footer>本地计算。下载本页即可离线使用。</footer>
+</main>
+
+<script id="print-scale-core">
+function readMillimeters(raw, label, min, max) {
+  const text = raw.trim();
+  if (!/^[0-9]{1,4}(?:[.,][0-9])?$/.test(text)) {
+    throw new Error(label + '须填 ' + min + '–' + max + ' 毫米，最多一位小数。');
+  }
+  const millimeters = Number(text.replace(',', '.'));
+  if (millimeters < min || millimeters > max) {
+    throw new Error(label + '须在 ' + min + '–' + max + ' 毫米之间。');
+  }
+  return Math.round(millimeters * 10);
+}
+
+function calculatePrintScale(input) {
+  // Keep dimensions in tenths of a millimeter to round percentages down reliably.
+  const sourceWidth = readMillimeters(input.sourceWidth, '原稿宽度', 1, 2000);
+  const sourceHeight = readMillimeters(input.sourceHeight, '原稿高度', 1, 2000);
+  const paperWidth = readMillimeters(input.paperWidth, '纸张宽度', 1, 2000);
+  const paperHeight = readMillimeters(input.paperHeight, '纸张高度', 1, 2000);
+  const margin = readMillimeters(input.margin, '每边留白', 0, 500);
+  const usableWidth = paperWidth - margin * 2;
+  const usableHeight = paperHeight - margin * 2;
+  if (usableWidth <= 0 || usableHeight <= 0) {
+    throw new Error('留白占满了纸张，请减小每边留白或换用更大的纸张。');
+  }
+
+  function fit(width, height) {
+    return Math.floor(Math.min(usableWidth * 1000 / width, usableHeight * 1000 / height));
+  }
+
+  const upright = fit(sourceWidth, sourceHeight);
+  const sideways = fit(sourceHeight, sourceWidth);
+  const rotated = input.allowRotation && sideways > upright;
+  const scale = rotated ? sideways : upright;
+  if (scale === 0) {
+    throw new Error('可用区域只能容纳小于 0.1% 的原稿，请检查尺寸或留白。');
+  }
+
+  const printedWidth = (rotated ? sourceHeight : sourceWidth) * scale / 1000;
+  const printedHeight = (rotated ? sourceWidth : sourceHeight) * scale / 1000;
+  return {paperWidth, paperHeight, margin, usableWidth, usableHeight,
+    upright, sideways, rotated, scale, printedWidth, printedHeight};
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('settings');
+const result = byId('result');
+const status = byId('status');
+const fields = {
+  sourceWidth: 'source-width', sourceHeight: 'source-height',
+  paperWidth: 'paper-width', paperHeight: 'paper-height', margin: 'margin',
+};
+const percentage = value => value === 0 ? '低于 0.1%' : (value / 10).toFixed(1) + '%';
+const mm = new Intl.NumberFormat('zh-CN', {maximumFractionDigits: 2});
+
+function setRect(id, x, y, width, height) {
+  const rect = byId(id);
+  for (const [name, value] of Object.entries({x, y, width, height})) {
+    rect.setAttribute(name, value);
+  }
+}
+
+function calculate() {
+  result.hidden = true;
+  status.removeAttribute('data-error');
+  try {
+    const input = Object.fromEntries(Object.entries(fields).map(([key, id]) => [key, byId(id).value]));
+    input.allowRotation = byId('allow-rotation').checked;
+    const fit = calculatePrintScale(input);
+    byId('scale').textContent = percentage(fit.scale);
+    byId('direction').textContent = fit.rotated ? '先将原稿旋转 90°' : '保持原稿方向';
+    byId('comparison').textContent = input.allowRotation
+      ? '原方向 ' + percentage(fit.upright) + ' · 旋转 90° ' + percentage(fit.sideways)
+      : '当前仅计算原方向。';
+    byId('size').textContent = '印出约 ' + mm.format(fit.printedWidth / 10) + ' × ' + mm.format(fit.printedHeight / 10) + ' 毫米';
+    const whole = Math.floor(fit.scale / 10);
+    byId('whole').textContent = whole >= 1
+      ? '若打印界面只接受整数，填 ' + whole + '%。'
+      : '此比例低于 1%，需要打印软件支持小数缩放。';
+    byId('preview').setAttribute('viewBox', [-fit.paperWidth * .02, -fit.paperHeight * .02, fit.paperWidth * 1.04, fit.paperHeight * 1.04].join(' '));
+    setRect('paper', 0, 0, fit.paperWidth, fit.paperHeight);
+    setRect('usable', fit.margin, fit.margin, fit.usableWidth, fit.usableHeight);
+    setRect('placed', (fit.paperWidth - fit.printedWidth) / 2, (fit.paperHeight - fit.printedHeight) / 2, fit.printedWidth, fit.printedHeight);
+    status.textContent = '建议自定义缩放';
+    result.hidden = false;
+  } catch (error) {
+    status.textContent = error.message;
+    status.setAttribute('data-error', '');
+  }
+}
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  calculate();
+});
+form.addEventListener('input', () => {
+  result.hidden = true;
+  status.removeAttribute('data-error');
+  status.textContent = '尺寸或方向已更新，请重新计算。';
+});
+byId('example').addEventListener('click', () => {
+  form.reset();
+  calculate();
+});
+calculate();
+</script>
+</body>
+</html>

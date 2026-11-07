@@ -168,5 +168,15 @@
     "path": "text-limit.html",
     "category": "数字生活",
     "test": "node --test test-text-limit.mjs"
+  },
+  {
+    "id": 18,
+    "date": "2026-11-07",
+    "slug": "print-scale",
+    "title": "打印缩放计算器 / Print Scale",
+    "problem": "换纸张打印时不清楚缩放要填多少，也难比较旋转后能否印得更大",
+    "path": "print-scale.html",
+    "category": "日常打印",
+    "test": "node --test test-print-scale.mjs"
   }
 ]
