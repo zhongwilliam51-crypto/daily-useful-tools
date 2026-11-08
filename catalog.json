@@ -178,5 +178,15 @@
     "path": "print-scale.html",
     "category": "日常打印",
     "test": "node --test test-print-scale.mjs"
+  },
+  {
+    "id": 19,
+    "date": "2026-11-08",
+    "slug": "table-markdown",
+    "title": "表格转 Markdown / Table to Markdown",
+    "problem": "把表格里的数据放入 GitHub README 或 Issue 时，需要手动补列分隔线并处理特殊字符",
+    "path": "table-markdown.html",
+    "category": "日常效率",
+    "test": "node --test test-table-markdown.mjs"
   }
 ]

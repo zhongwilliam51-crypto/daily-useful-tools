@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="粘贴从表格复制的单元格，生成可用于 GitHub 的 Markdown 表格。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>表格转 Markdown · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: #a64526; font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+textarea, button { font: inherit; }
+textarea { display: block; width: 100%; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 10px; min-height: 174px; resize: vertical; }
+#markdown { font: 14px/1.6 ui-monospace, monospace; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+button:disabled { opacity: .48; cursor: default; }
+:focus-visible { outline: 2px solid #a64526; outline-offset: 3px; }
+.note, #status { font-size: 14px; }
+#status { margin: 12px 0 0; }
+#status[data-error] { color: #9d2c22; }
+.preview { margin-top: 20px; }
+.table-scroll { max-height: 330px; overflow: auto; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 8px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); text-align: start; min-width: 76px; max-width: 280px; overflow-wrap: anywhere; white-space: pre-line; }
+th:last-child, td:last-child { border-right: 0; }
+tbody tr:last-child td { border-bottom: 0; }
+th { background: #edf2e8; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>019 / TABLE TO MARKDOWN</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">日常效率</div>
+  <h1>表格转 Markdown</h1>
+  <p class="intro">从表格复制一块单元格，粘贴后就能生成 GitHub README 或 Issue 可用的表格。</p>
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 粘贴单元格</h2>
+      <label for="source">表格文本</label>
+      <textarea id="source" aria-describedby="source-help" autocomplete="off" spellcheck="false" placeholder="在表格中选中要复制的区域，包含表头"></textarea>
+      <p class="note" id="source-help">列之间用 Tab 分隔，第一行为表头。最多 200 行、20 列和 50,000 个 UTF-16 码元。</p>
+      <div class="actions">
+        <button class="primary" id="convert" type="button">转换 ↗</button>
+        <button id="example" type="button">试试示例</button>
+        <button id="clear" type="button">清空</button>
+      </div>
+      <p id="status" role="status">粘贴后点击转换，或按 Ctrl / ⌘ + Enter。</p>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 复制 Markdown</h2>
+      <label for="markdown">Markdown 源码</label>
+      <textarea id="markdown" readonly spellcheck="false" placeholder="转换后在这里显示"></textarea>
+      <div class="actions"><button id="copy" type="button" disabled>复制源码</button></div>
+    </section>
+  </div>
+  <section id="preview" class="panel preview" aria-labelledby="preview-heading" hidden>
+    <h2 id="preview-heading">表格预览</h2>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="可滚动的表格预览">
+      <table id="preview-table" aria-labelledby="preview-heading"></table>
+    </div>
+  </section>
+  <p class="note">支持双引号包住的多行单元格。各行须有相同列数，空单元格保留。工具只转换粘贴的文字，样式、合并单元格和公式本身不随文本复制。</p>
+  <footer>内容在当前浏览器处理。无需注册或上传，下载本页后可离线使用。</footer>
+</main>
+
+<script id="table-markdown-core">
+function parseTableText(source) {
+  if (source.length > 50000) throw new Error('表格文本过长，请复制较小的区域。');
+  if (!source.trim()) throw new Error('请先粘贴包含表头的表格文本。');
+  if (source.includes('\0')) throw new Error('文本包含无效的空字符，请重新复制。');
+
+  const text = source.replace(/\r\n?/g, '\n');
+  const rows = [];
+  let row = [];
+  let cell = '';
+  let quoted = false;
+  let closed = false;
+
+  function finishCell() {
+    if (row.length >= 20) throw new Error('表格最多支持 20 列。');
+    row.push(cell.replace(/\t/g, ' ').replace(/^ +| +$/g, ''));
+    cell = '';
+    closed = false;
+  }
+
+  function finishRow() {
+    finishCell();
+    if (rows.length >= 200) throw new Error('表格最多支持 200 行，包含表头。');
+    if (rows.length && row.length !== rows[0].length) {
+      throw new Error('第 ' + (rows.length + 1) + ' 行有 ' + row.length + ' 列，表头有 ' + rows[0].length + ' 列。请重新复制一块矩形区域。');
+    }
+    rows.push(row);
+    row = [];
+  }
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (quoted) {
+      if (char !== '"') {
+        cell += char;
+      } else if (text[index + 1] === '"') {
+        cell += '"';
+        index += 1;
+      } else {
+        quoted = false;
+        closed = true;
+      }
+    } else if (char === '\t') {
+      finishCell();
+    } else if (char === '\n') {
+      finishRow();
+    } else if (closed) {
+      throw new Error('第 ' + (rows.length + 1) + ' 行的引号后需要 Tab 或换行。');
+    } else if (char === '"' && cell === '') {
+      quoted = true;
+    } else {
+      cell += char;
+    }
+  }
+  if (quoted) throw new Error('第 ' + (rows.length + 1) + ' 行的引号没有闭合。');
+  if (row.length || cell || closed || !text.endsWith('\n')) finishRow();
+  if (!rows[0].some(cell => cell.trim())) throw new Error('请在第一行填写至少一个表头。');
+  return rows;
+}
+
+const cellEntities = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '|': '&#124;', '\\': '&#92;', '\n': '<br>'};
+
+function markdownCell(text) {
+  // Encode pipes and backslashes independently so adjacent characters cannot split cells.
+  return text.replace(/[&<>|\\\n*_\[\]~\x60]/g, char => cellEntities[char] ?? '\\' + char);
+}
+
+function makeMarkdown(rows) {
+  const line = cells => '| ' + cells.join(' | ') + ' |';
+  const [header, ...body] = rows;
+  return [
+    line(header.map(markdownCell)),
+    line(header.map(() => '---')),
+    ...body.map(row => line(row.map(markdownCell))),
+  ].join('\n');
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const source = byId('source');
+const output = byId('markdown');
+const status = byId('status');
+const preview = byId('preview');
+const table = byId('preview-table');
+const copy = byId('copy');
+let version = 0;
+
+function message(text, error = false) {
+  status.textContent = text;
+  status.toggleAttribute('data-error', error);
+}
+
+function invalidate() {
+  version += 1;
+  output.value = '';
+  copy.disabled = true;
+  preview.hidden = true;
+  table.replaceChildren();
+}
+
+function renderPreview(rows) {
+  const header = table.createTHead().insertRow();
+  for (const label of rows[0]) {
+    const cell = document.createElement('th');
+    cell.scope = 'col';
+    cell.textContent = label;
+    header.append(cell);
+  }
+  const body = table.createTBody();
+  for (const values of rows.slice(1)) {
+    const row = body.insertRow();
+    for (const value of values) row.insertCell().textContent = value;
+  }
+}
+
+function convert() {
+  invalidate();
+  try {
+    const rows = parseTableText(source.value);
+    output.value = makeMarkdown(rows);
+    renderPreview(rows);
+    preview.hidden = false;
+    copy.disabled = false;
+    message('已转换 ' + rows.length + ' 行 × ' + rows[0].length + ' 列，包含表头。');
+  } catch (error) {
+    message(error.message, true);
+  }
+}
+
+source.addEventListener('input', () => {
+  invalidate();
+  message('表格文本已更新，请重新转换。');
+});
+byId('convert').addEventListener('click', convert);
+byId('example').addEventListener('click', () => {
+  source.value = '事项\t负责人\t备注\n采购\t小林\t米 | 面\n整理\t小周\t"先核对\n再入库"\n归档\t\t保留 <原件>';
+  convert();
+});
+byId('clear').addEventListener('click', () => {
+  source.value = '';
+  invalidate();
+  message('已清空表格和结果。');
+  source.focus();
+});
+copy.addEventListener('click', async () => {
+  const current = version;
+  try {
+    await navigator.clipboard.writeText(output.value);
+    if (current === version) message('已复制 Markdown 源码。');
+  } catch {
+    if (current !== version) return;
+    output.focus();
+    output.select();
+    message('已选中源码，可按 Ctrl / ⌘ + C 手动复制。');
+  }
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey) && !event.isComposing) {
+    event.preventDefault();
+    convert();
+  }
+});
+</script>
+</body>
+</html>
