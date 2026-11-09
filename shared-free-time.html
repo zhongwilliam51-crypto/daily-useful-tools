@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="对照两个人同一天的空闲时段，找出双方都有空且够长的时间。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>共同空档查找器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: #a64526; font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+textarea, input, button { font: inherit; }
+textarea, input { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+textarea { display: block; min-height: 112px; resize: vertical; }
+.inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.duration { max-width: 200px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+button:disabled { opacity: .48; cursor: default; }
+:focus-visible { outline: 2px solid #a64526; outline-offset: 3px; }
+.note, #status, #copy-status { font-size: 14px; }
+#status { margin: 0; }
+#status[data-error] { color: #9d2c22; }
+#slots { display: grid; gap: 8px; list-style: none; margin: 14px 0 0; padding: 0; }
+#slots li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 7px; padding: 9px 12px; }
+.slot-time { font-weight: 750; font-variant-numeric: tabular-nums; }
+.slot-duration { color: var(--muted); }
+#copy-text { margin-top: 10px; min-height: 100px; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 420px) { .inputs { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>020 / SHARED FREE TIME</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">日常日程</div>
+  <h1>共同空档查找器</h1>
+  <p class="intro">约碰面、复习或通话时，贴上两个人同一天的空闲时间，找出双方都有空、又够长的时段。</p>
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 两份空闲时间</h2>
+      <form id="schedule" autocomplete="off">
+        <div class="inputs">
+          <div>
+            <label for="mine">我的空档</label>
+            <textarea id="mine" spellcheck="false" aria-describedby="format-help" placeholder="09:00-11:30&#10;14:00-16:00"></textarea>
+          </div>
+          <div>
+            <label for="theirs">对方的空档</label>
+            <textarea id="theirs" spellcheck="false" aria-describedby="format-help" placeholder="10:30-12:00&#10;15:00-17:00"></textarea>
+          </div>
+        </div>
+        <label for="minimum">至少需要 · 分钟</label>
+        <input id="minimum" class="duration" type="text" inputmode="numeric" value="30">
+        <p id="format-help" class="note">每行一段，如 09:00-11:30。使用同一天、同一时区的时间。</p>
+        <div class="actions">
+          <button class="primary" type="submit">找共同空档 ↗</button>
+          <button id="example" type="button">试试示例</button>
+          <button id="clear" type="button">清空</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 双方都有空</h2>
+      <p id="status" role="status">填好两份空档后计算，或先试试示例。</p>
+      <ul id="slots" aria-label="共同空档"></ul>
+      <div id="result-actions" hidden>
+        <div class="actions"><button id="copy" type="button">复制空档</button></div>
+        <p id="copy-status" role="status" hidden></p>
+        <textarea id="copy-text" aria-label="可手动复制的共同空档" readonly hidden></textarea>
+      </div>
+    </section>
+  </div>
+  <p class="note">同一人的重复、重叠和相接时段会先合并。24:00 只可作为当天结束时间，跨午夜请按日期分开计算。每人最多 100 段、10,000 个 UTF-16 码元。</p>
+  <footer>在当前浏览器计算。下载本页后可离线使用。</footer>
+</main>
+
+<script id="shared-free-time-core">
+function parseClock(raw, allowEnd = false) {
+  if (typeof raw !== 'string' || !/^\d{1,2}:\d{2}$/.test(raw)) throw new Error('时间请使用 H:MM 或 HH:MM 格式。');
+  const [hours, minutes] = raw.split(':').map(Number);
+  if (hours === 24 && minutes === 0 && allowEnd) return 1440;
+  if (hours > 23 || minutes > 59) throw new Error('时间超出范围；24:00 只能用作结束时间。');
+  return hours * 60 + minutes;
+}
+function timeClock(minutes) { return String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0'); }
+function timeDuration(minutes) {
+  const hours = Math.floor(minutes / 60), rest = minutes % 60;
+  return hours ? hours + ' 小时' + (rest ? ' ' + rest + ' 分钟' : '') : rest + ' 分钟';
+}
+function readAvailability(text, label) {
+  if (text.length > 10000) throw new Error(label + '的输入过长，请缩短后重试。');
+  const ranges = [];
+  for (const [index, line] of text.split(/\r\n?|\n/).entries()) {
+    const value = line.trim();
+    if (!value) continue;
+    const location = label + '第 ' + (index + 1) + ' 行';
+    const match = value.match(/^(\d{1,2}:\d{2})\s*[-–—~～至]\s*(\d{1,2}:\d{2})$/);
+    if (!match) throw new Error(location + '格式有误，请填写开始时间-结束时间。');
+    let start, end;
+    try {
+      start = parseClock(match[1]);
+      end = parseClock(match[2], true);
+    } catch (error) {
+      throw new Error(location + '，' + error.message);
+    }
+    if (end <= start) throw new Error(location + '的结束须晚于开始，跨午夜请按日期拆开。');
+    if (ranges.length === 100) throw new Error(label + '最多填写 100 段空档。');
+    ranges.push({start, end});
+  }
+  if (!ranges.length) throw new Error('请填写' + label + '至少一段空档。');
+  ranges.sort((a, b) => a.start - b.start);
+  const merged = [];
+  for (const range of ranges) {
+    const previous = merged.at(-1);
+    if (previous && range.start <= previous.end) {
+      previous.end = Math.max(previous.end, range.end);
+    } else {
+      merged.push(range);
+    }
+  }
+  return merged;
+}
+
+function findSharedFreeTime(mine, theirs, rawMinimum) {
+  const limit = rawMinimum.trim();
+  const minimum = Number(limit);
+  if (!/^\d{1,4}$/.test(limit) || minimum < 1 || minimum > 1440) {
+    throw new Error('最短时长须为 1–1440 之间的整数分钟。');
+  }
+  const left = readAvailability(mine, '我方');
+  const right = readAvailability(theirs, '对方');
+  const slots = [];
+  let longest = 0;
+  let i = 0, j = 0;
+  while (i < left.length && j < right.length) {
+    const a = left[i], b = right[j];
+    const start = Math.max(a.start, b.start);
+    const end = Math.min(a.end, b.end);
+    const minutes = end - start;
+    longest = Math.max(longest, minutes);
+    if (minutes >= minimum) slots.push({start, end, minutes});
+    if (a.end <= b.end) i += 1;
+    if (b.end <= a.end) j += 1;
+  }
+  return {slots, longest};
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('schedule');
+const mine = byId('mine');
+const theirs = byId('theirs');
+const minimum = byId('minimum');
+const list = byId('slots');
+const actions = byId('result-actions');
+const copyText = byId('copy-text');
+const copyStatus = byId('copy-status');
+const status = byId('status');
+let revision = 0;
+
+function invalidate() {
+  revision += 1;
+  list.replaceChildren();
+  actions.hidden = true;
+  copyText.hidden = true;
+  copyText.value = '';
+  copyStatus.hidden = true;
+  status.removeAttribute('data-error');
+}
+
+function calculate() {
+  invalidate();
+  try {
+    const {slots, longest} = findSharedFreeTime(mine.value, theirs.value, minimum.value);
+    if (!slots.length) {
+      status.textContent = longest
+        ? '没有够长的空档。最长的一段是 ' + timeDuration(longest) + '。'
+        : '两份空档没有重叠。';
+      return;
+    }
+    const lines = slots.map(slot => {
+      const range = timeClock(slot.start) + '–' + timeClock(slot.end);
+      const duration = timeDuration(slot.minutes);
+      const row = document.createElement('li');
+      const time = document.createElement('span');
+      const length = document.createElement('span');
+      time.className = 'slot-time';
+      length.className = 'slot-duration';
+      time.textContent = range;
+      length.textContent = duration;
+      row.append(time, length);
+      list.append(row);
+      return range + '（' + duration + '）';
+    });
+    copyText.value = '共同空档（同一天、同一时区）\n' + lines.join('\n');
+    actions.hidden = false;
+    status.textContent = '找到 ' + slots.length + ' 段，最长 ' + timeDuration(longest) + '。';
+  } catch (error) {
+    status.textContent = error.message;
+    status.setAttribute('data-error', '');
+  }
+}
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  calculate();
+});
+form.addEventListener('input', () => {
+  invalidate();
+  status.textContent = '时间或时长已更新，请重新计算。';
+});
+byId('example').addEventListener('click', () => {
+  mine.value = '09:00-11:30\n14:00-16:00';
+  theirs.value = '10:30-12:00\n15:00-17:00';
+  minimum.value = '45';
+  calculate();
+});
+byId('clear').addEventListener('click', () => {
+  form.reset();
+  invalidate();
+  status.textContent = '已清空两份空档。';
+  mine.focus();
+});
+byId('copy').addEventListener('click', async () => {
+  const current = revision;
+  try {
+    await navigator.clipboard.writeText(copyText.value);
+    if (current !== revision) return;
+    copyStatus.textContent = '已复制空档。';
+  } catch {
+    if (current !== revision) return;
+    copyText.hidden = false;
+    copyText.focus();
+    copyText.select();
+    copyStatus.textContent = '已选中空档，可按 Ctrl / ⌘ + C 手动复制。';
+  }
+  copyStatus.hidden = false;
+});
+</script>
+</body>
+</html>

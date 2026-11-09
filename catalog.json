@@ -188,5 +188,15 @@
     "path": "table-markdown.html",
     "category": "日常效率",
     "test": "node --test test-table-markdown.mjs"
+  },
+  {
+    "id": 20,
+    "date": "2026-11-09",
+    "slug": "shared-free-time",
+    "title": "共同空档查找器 / Shared Free Time",
+    "problem": "约碰面、复习或通话时，需要从两份零散的空闲时段里找出双方都有空且够长的时间",
+    "path": "shared-free-time.html",
+    "category": "日常日程",
+    "test": "node --test test-shared-free-time.mjs"
   }
 ]
