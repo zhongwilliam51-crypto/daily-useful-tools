@@ -198,5 +198,15 @@
     "path": "shared-free-time.html",
     "category": "日常日程",
     "test": "node --test test-shared-free-time.mjs"
+  },
+  {
+    "id": 21,
+    "date": "2026-11-10",
+    "slug": "appliance-energy",
+    "title": "电器用电估算器 / Appliance Energy",
+    "problem": "知道电器功率和使用时间，想估算一段时间耗多少电以及大致电费",
+    "path": "appliance-energy.html",
+    "category": "日常用电",
+    "test": "node --test test-appliance-energy.mjs"
   }
 ]

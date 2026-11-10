@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="用电器功率、每天使用时长和天数估算耗电量，也可按自填单价估算电费。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>电器用电估算器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; --accent: #a64526; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label, legend { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+input, button { font: inherit; }
+input { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+fieldset { border: 0; padding: 0; margin: 12px 0; min-width: 0; }
+legend { padding: 0; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair > div { min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note, #status { font-size: 14px; }
+#power-help { margin: 6px 0 0; }
+#status { margin: 0; }
+#status[data-error] { color: #9d2c22; }
+dl { margin: 12px 0 0; }
+dl > div { padding: 10px 0; border-top: 1px solid var(--line); }
+dt { color: var(--muted); font-size: 14px; }
+dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 750; overflow-wrap: anywhere; }
+#total { font-size: clamp(30px, 5vw, 46px); line-height: 1.25; color: var(--accent); }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 350px) { .billing { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>021 / APPLIANCE ENERGY</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">日常用电</div>
+  <h1>电器用电估算器</h1>
+  <p class="intro">这台电器用一阵子会耗多少电？输入功率和使用时间，看看每天和这段时间各用多少度。</p>
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 填写用电情况</h2>
+      <form id="usage" autocomplete="off">
+        <label for="watts">使用时的平均功率 · W</label>
+        <input id="watts" type="text" inputmode="decimal" aria-describedby="power-help" placeholder="例如 120">
+        <p id="power-help" class="note">优先填实测平均功率。只有铭牌功率时，可用它粗估。</p>
+        <fieldset>
+          <legend>每天使用多久</legend>
+          <div class="pair">
+            <div><label for="hours">小时</label><input id="hours" type="text" inputmode="numeric" value="1"></div>
+            <div><label for="minutes">分钟</label><input id="minutes" type="text" inputmode="numeric" value="0"></div>
+          </div>
+        </fieldset>
+        <div class="pair billing">
+          <div><label for="days">使用天数</label><input id="days" type="text" inputmode="numeric" value="30"></div>
+          <div><label for="rate">每度单价 · 选填</label><input id="rate" type="text" inputmode="decimal" placeholder="例如 1.20"></div>
+        </div>
+        <div class="actions">
+          <button class="primary" type="submit">估算用电 ↗</button>
+          <button id="example" type="button">试试示例</button>
+          <button id="clear" type="button">重置</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 用电估算</h2>
+      <p id="status" role="status">填好功率和使用时间后计算，或先试试示例。</p>
+      <dl id="figures" hidden>
+        <div><dt id="total-label">期间用电</dt><dd id="total"></dd></div>
+        <div><dt>每天用电</dt><dd id="daily"></dd></div>
+        <div id="cost-row" hidden><dt>期间电费 · 与单价同币种</dt><dd id="cost"></dd></div>
+      </dl>
+    </section>
+  </div>
+  <p class="note">一度电等于 1 kWh。用电量（度）＝功率（W）× 使用小时数 ÷ 1,000。电费按你填的固定单价估算，阶梯电价、分时电价及固定费用以账单为准。</p>
+  <footer>在当前浏览器计算。下载本页后可离线使用。</footer>
+</main>
+
+<script id="appliance-energy-core">
+function readNumber(raw, label, min, max, decimals) {
+  const text = raw.trim();
+  const pattern = decimals
+    ? new RegExp('^[0-9]{1,5}(?:[.,][0-9]{1,' + decimals + '})?$')
+    : /^[0-9]{1,5}$/;
+  const value = Number(text.replace(',', '.'));
+  if (!pattern.test(text) || value < min || value > max) {
+    const precision = decimals ? '，最多 ' + decimals + ' 位小数' : ' 的整数';
+    throw new Error(label + '须填 ' + min + '–' + max + precision + '。');
+  }
+  return value;
+}
+
+function estimateEnergy(input) {
+  const watts = readNumber(input.watts, '功率', 0, 10000, 1);
+  const hours = readNumber(input.hours, '小时', 0, 24, 0);
+  const minutes = readNumber(input.minutes, '分钟', 0, 59, 0);
+  const days = readNumber(input.days, '使用天数', 1, 366, 0);
+  const runtime = hours * 60 + minutes;
+  if (runtime > 1440) throw new Error('每天使用时长不能超过 24 小时。');
+  const rate = input.rate.trim() ? readNumber(input.rate, '每度单价', 0, 100, 4) : null;
+  const tenthsWattMinutes = Math.round(watts * 10) * runtime;
+  const dailyKwh = tenthsWattMinutes / 600000;
+  const totalKwh = tenthsWattMinutes * days / 600000;
+  return {days, dailyKwh, totalKwh, cost: rate === null ? null : totalKwh * rate};
+}
+
+const energyNumber = new Intl.NumberFormat('zh-CN', {maximumFractionDigits: 4});
+const costNumber = new Intl.NumberFormat('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+function formatEnergy(kwh) {
+  return kwh > 0 && kwh < 0.01
+    ? energyNumber.format(kwh * 1000) + ' Wh'
+    : energyNumber.format(kwh) + ' kWh';
+}
+
+function formatCost(cost) {
+  return cost > 0 && cost < 0.01 ? '小于 0.01' : costNumber.format(cost);
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('usage');
+const figures = byId('figures');
+const status = byId('status');
+const fields = ['watts', 'hours', 'minutes', 'days', 'rate'];
+
+function showStatus(message, error = false) {
+  status.textContent = message;
+  status.toggleAttribute('data-error', error);
+}
+
+function calculate() {
+  figures.hidden = true;
+  try {
+    const input = Object.fromEntries(fields.map(field => [field, byId(field).value]));
+    const result = estimateEnergy(input);
+    byId('total-label').textContent = result.days + ' 天用电';
+    byId('total').textContent = formatEnergy(result.totalKwh);
+    byId('daily').textContent = formatEnergy(result.dailyKwh);
+    byId('cost-row').hidden = result.cost === null;
+    byId('cost').textContent = result.cost === null ? '' : formatCost(result.cost);
+    figures.hidden = false;
+    showStatus(result.cost === null ? '已估算用电。填入每度单价可同时计算电费。' : '按当前功率、时长和固定单价估算。');
+  } catch (error) {
+    showStatus(error.message, true);
+  }
+}
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  calculate();
+});
+form.addEventListener('input', () => {
+  figures.hidden = true;
+  showStatus('输入已更新，请重新估算。');
+});
+byId('example').addEventListener('click', () => {
+  const example = {watts: '120', hours: '2', minutes: '30', days: '30', rate: '1.20'};
+  for (const field of fields) byId(field).value = example[field];
+  calculate();
+});
+byId('clear').addEventListener('click', () => {
+  form.reset();
+  figures.hidden = true;
+  showStatus('已重置，填写新的用电情况后可重新估算。');
+  byId('watts').focus();
+});
+</script>
+</body>
+</html>
