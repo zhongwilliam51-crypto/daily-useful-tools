@@ -208,5 +208,15 @@
     "path": "appliance-energy.html",
     "category": "日常用电",
     "test": "node --test test-appliance-energy.mjs"
+  },
+  {
+    "id": 22,
+    "date": "2026-11-11",
+    "slug": "hong-kong-time",
+    "title": "香港时间换算器 / Hong Kong Time",
+    "problem": "安排跨时区通话时，容易忽略对方的跨日日期及夏令时变化",
+    "path": "hong-kong-time.html",
+    "category": "跨时区日程",
+    "test": "node --test test-hong-kong-time.mjs"
   }
 ]

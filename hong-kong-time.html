@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="把一个香港时刻换算为伦敦、纽约、洛杉矶、悉尼、东京和 UTC，显示完整日期及对应时差。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>香港时间换算器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; --accent: #a64526; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; align-items: start; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+input, button, textarea { font: inherit; }
+input, textarea { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+.field + .field { margin-top: 12px; }
+textarea { min-height: 160px; margin-top: 10px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note, #status, #copy-status { font-size: 14px; }
+#status { margin: 0; }
+#status[data-error] { color: #9d2c22; }
+#cities { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.city { min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--paper); }
+.city h3 { margin: 0; font-size: 16px; }
+.clock { font-size: 30px; font-weight: 800; line-height: 1.3; color: var(--accent); font-variant-numeric: tabular-nums; }
+.local-date, .offset, .relative { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.relative { font-weight: 700; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 350px) { #cities { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>022 / HONG KONG TIME</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">跨时区日程</div>
+  <h1>香港时间换算器</h1>
+  <p class="intro">香港这个时间，对方那里几点？选一个时刻，查看六地对应的日期、时间和 UTC 偏移。</p>
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 输入香港时刻</h2>
+      <form id="source" autocomplete="off">
+        <div class="field"><label for="date">香港日期</label><input id="date" type="date" min="2000-01-01" max="2099-12-31"></div>
+        <div class="field"><label for="time">香港时间 · UTC+08:00</label><input id="time" type="time" step="60"></div>
+        <div class="actions">
+          <button class="primary" type="submit">换算时刻 ↗</button>
+          <button id="example" type="button">试试示例</button>
+          <button id="now" type="button">填入当前时间</button>
+        </div>
+      </form>
+      <p class="note">结果使用 24 小时制，输入框的显示格式按设备设置。初始和当前时间按钮取设备时钟，再换成香港时间。</p>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 同一时刻，各地时间</h2>
+      <p id="status" role="status">选好香港时刻后换算，或先试试示例。</p>
+      <div id="cities"></div>
+      <div id="copy-area" hidden>
+        <div class="actions"><button id="copy" type="button">复制时间对照</button></div>
+        <p id="copy-status" role="status" hidden></p>
+        <textarea id="copy-text" aria-label="可手动复制的时间对照" readonly hidden></textarea>
+      </div>
+    </section>
+  </div>
+  <p class="note">“同日、前一天、后一天”均相对输入的香港日期。伦敦、纽约、洛杉矶和悉尼的偏移按所选日期换算，包含当地夏令时。结果使用浏览器内置时区数据，日程较远时请在临近日期再核对。</p>
+  <footer>在当前浏览器计算。下载本页后可离线使用。</footer>
+</main>
+
+<script id="hong-kong-time-core">
+const timeCities = [
+  {name: '伦敦', zone: 'Europe/London'},
+  {name: '纽约', zone: 'America/New_York'},
+  {name: '洛杉矶', zone: 'America/Los_Angeles'},
+  {name: '悉尼', zone: 'Australia/Sydney'},
+  {name: '东京', zone: 'Asia/Tokyo'},
+  {name: 'UTC', zone: 'UTC'},
+];
+const weekNames = {Sun: '周日', Mon: '周一', Tue: '周二', Wed: '周三', Thu: '周四', Fri: '周五', Sat: '周六'};
+const twoDigits = value => String(value).padStart(2, '0');
+
+function hongKongInstant(date, time) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('请填写完整的香港日期。');
+  const [year, month, day] = date.split('-').map(Number);
+  const midnight = Date.UTC(year, month - 1, day);
+  const check = new Date(midnight);
+  if (year < 2000 || year > 2099 || check.getUTCFullYear() !== year ||
+      check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) {
+    throw new Error('日期须在 2000–2099 年内，且为有效的公历日期。');
+  }
+  if (!/^\d{2}:\d{2}$/.test(time)) throw new Error('请填写 HH:MM 格式的香港时间。');
+  const [hours, minutes] = time.split(':').map(Number);
+  if (hours > 23 || minutes > 59) throw new Error('时间须在 00:00–23:59 之间。');
+  return {stamp: midnight + (hours * 60 + minutes - 480) * 60000, midnight};
+}
+
+function cityMoment(stamp, referenceMidnight, city) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: city.zone, calendar: 'gregory', numberingSystem: 'latn',
+    year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  });
+  const parts = Object.fromEntries(formatter.formatToParts(stamp).map(part => [part.type, part.value]));
+  const localMidnight = Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day));
+  const localClock = Number(parts.hour) * 60 + Number(parts.minute);
+  const offsetMinutes = (localMidnight + localClock * 60000 - stamp) / 60000;
+  const absoluteOffset = Math.abs(offsetMinutes);
+  const offset = 'UTC' + (offsetMinutes >= 0 ? '+' : '−') + twoDigits(Math.floor(absoluteOffset / 60)) + ':' + twoDigits(absoluteOffset % 60);
+  const dayDifference = Math.round((localMidnight - referenceMidnight) / 86400000);
+  const relative = dayDifference === 0 ? '同日' : dayDifference < 0 ? '前一天' : '后一天';
+  return {
+    ...city, date: parts.year + '-' + parts.month + '-' + parts.day,
+    time: parts.hour + ':' + parts.minute, weekday: weekNames[parts.weekday],
+    offset, offsetMinutes, relative,
+  };
+}
+
+function convertHongKongTime(date, time) {
+  const {stamp, midnight} = hongKongInstant(date, time);
+  try {
+    return timeCities.map(city => cityMoment(stamp, midnight, city));
+  } catch {
+    throw new Error('浏览器无法读取所需时区数据，请使用更新的浏览器。');
+  }
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('source');
+const dateInput = byId('date');
+const timeInput = byId('time');
+const cities = byId('cities');
+const status = byId('status');
+const copyText = byId('copy-text');
+const copyStatus = byId('copy-status');
+let revision = 0;
+
+function invalidate() {
+  revision += 1;
+  cities.replaceChildren();
+  byId('copy-area').hidden = true;
+  copyText.hidden = true;
+  copyText.value = '';
+  copyStatus.hidden = true;
+  status.removeAttribute('data-error');
+}
+
+function fillNow() {
+  const local = new Date(Date.now() + 480 * 60000).toISOString();
+  dateInput.value = local.slice(0, 10);
+  timeInput.value = local.slice(11, 16);
+}
+
+function calculate() {
+  invalidate();
+  try {
+    const moments = convertHongKongTime(dateInput.value, timeInput.value);
+    for (const moment of moments) {
+      const card = document.createElement('div');
+      card.className = 'city';
+      const fields = [
+        ['h3', '', moment.name],
+        ['div', 'clock', moment.time],
+        ['div', 'local-date', moment.date + ' ' + moment.weekday],
+        ['div', 'offset', moment.offset],
+        ['div', 'relative', moment.relative],
+      ];
+      for (const [tag, className, text] of fields) {
+        const node = document.createElement(tag);
+        node.className = className;
+        node.textContent = text;
+        card.append(node);
+      }
+      cities.append(card);
+    }
+    copyText.value = '同一时刻的时间对照\n香港：' + dateInput.value + ' ' + timeInput.value + '（UTC+08:00）\n' +
+      moments.map(m => m.name + '：' + m.date + ' ' + m.time + ' ' + m.weekday + '（' + m.offset + '）').join('\n');
+    byId('copy-area').hidden = false;
+    status.textContent = '香港 ' + dateInput.value + ' ' + timeInput.value + ' 对应如下时刻。';
+  } catch (error) {
+    status.textContent = error.message;
+    status.setAttribute('data-error', '');
+  }
+}
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  calculate();
+});
+form.addEventListener('input', () => {
+  invalidate();
+  status.textContent = '香港时刻已更新，请重新换算。';
+});
+byId('example').addEventListener('click', () => {
+  dateInput.value = '2026-11-11';
+  timeInput.value = '09:00';
+  calculate();
+});
+byId('now').addEventListener('click', () => {
+  fillNow();
+  calculate();
+});
+byId('copy').addEventListener('click', async () => {
+  const version = revision;
+  try {
+    await navigator.clipboard.writeText(copyText.value);
+    if (version !== revision) return;
+    copyStatus.textContent = '已复制时间对照。';
+  } catch {
+    if (version !== revision) return;
+    copyText.hidden = false;
+    copyText.focus();
+    copyText.select();
+    copyStatus.textContent = '已选中时间对照，可按 Ctrl / ⌘ + C 手动复制。';
+  }
+  copyStatus.hidden = false;
+});
+fillNow();
+</script>
+</body>
+</html>
