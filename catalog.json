@@ -218,5 +218,15 @@
     "path": "hong-kong-time.html",
     "category": "跨时区日程",
     "test": "node --test test-hong-kong-time.mjs"
+  },
+  {
+    "id": 23,
+    "date": "2026-11-12",
+    "slug": "cart-threshold",
+    "title": "满减凑单计算器 / Cart Threshold",
+    "problem": "为了达到满减门槛准备加购，想知道凑单后实付金额究竟增加还是减少",
+    "path": "cart-threshold.html",
+    "category": "日常购物",
+    "test": "node --test test-cart-threshold.mjs"
   }
 ]
