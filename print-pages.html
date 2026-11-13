@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="整理零散打印页码，去重、排序、合并连续范围并核对总页数。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>打印页码整理器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; --accent: #a64526; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+input, textarea, select, button { font: inherit; }
+input, textarea, select { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+textarea { display: block; min-height: 130px; resize: vertical; overflow-wrap: anywhere; }
+#output { font: 16px/1.7 ui-monospace, monospace; }
+.field { margin-top: 12px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair > div { min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+button:disabled { opacity: .48; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note, #status, #metrics, #copy-status { font-size: 14px; }
+#status { margin: 12px 0 0; }
+#status[data-error] { color: #9d2c22; }
+#metrics { margin: 10px 0; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 350px) { .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a>
+  <span>024 / PRINT PAGES</span>
+  <a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a>
+</header>
+<main>
+  <div class="eyebrow">日常打印</div>
+  <h1>打印页码整理器</h1>
+  <p class="intro">要打印的页码散在几处？贴上单页和范围，去重、排序并合并连续页，核对后复制到打印窗口。</p>
+  <div class="workspace">
+    <section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">01 / 选择要打印的页</h2>
+      <form id="settings" autocomplete="off">
+        <div class="pair">
+          <div><label for="total">文件总页数</label><input id="total" type="text" inputmode="numeric" placeholder="例如 12"></div>
+          <div><label for="filter">保留哪些页</label><select id="filter"><option value="all">全部所选页</option><option value="odd">所选页中的奇数页</option><option value="even">所选页中的偶数页</option></select></div>
+        </div>
+        <div class="field"><label for="pages">页码或范围</label><textarea id="pages" spellcheck="false" aria-describedby="format-help" placeholder="1, 3-5, 4, 8&#10;10-12"></textarea></div>
+        <p id="format-help" class="note">用逗号、顿号或换行分隔。页码从 1 开始，范围的两端都计入。</p>
+        <div class="actions">
+          <button class="primary" type="submit">整理页码 ↗</button>
+          <button id="example" type="button">试试示例</button>
+          <button id="clear" type="button">清空</button>
+        </div>
+        <p id="status" role="status">填入文件总页数和所选页码后整理。</p>
+      </form>
+    </section>
+    <section class="panel result" aria-labelledby="result-heading">
+      <h2 id="result-heading">02 / 核对并复制</h2>
+      <label for="output">整理后的页码范围</label>
+      <textarea id="output" readonly spellcheck="false" placeholder="结果按页码从小到大显示"></textarea>
+      <p id="metrics" hidden></p>
+      <div class="actions"><button id="copy" type="button" disabled>复制页码</button></div>
+      <p id="copy-status" role="status" hidden></p>
+    </section>
+  </div>
+  <p class="note">在打印窗口的自定义页码中粘贴结果，并核对预览。这里使用文件中的页序号，文档印在纸上的页码、封面编号或逻辑标签可能与它不同。</p>
+  <footer>本地整理。下载本页后可离线使用。</footer>
+</main>
+
+<script id="print-pages-core">
+function pageNumber(raw, label, max) {
+  if (!/^\d{1,5}$/.test(raw) || Number(raw) < 1 || Number(raw) > max) {
+    throw new Error(label + '须为 1–' + max + ' 的整数。');
+  }
+  return Number(raw);
+}
+
+function compressPages(pages) {
+  const ranges = [];
+  for (let index = 0; index < pages.length; index += 1) {
+    const start = pages[index];
+    while (pages[index + 1] === pages[index] + 1) index += 1;
+    const end = pages[index];
+    ranges.push(start === end ? String(start) : start + '-' + end);
+  }
+  return ranges.join(',');
+}
+
+function arrangePrintPages(rawTotal, source, filter) {
+  const total = pageNumber(rawTotal.trim(), '文件总页数', 10000);
+  if (source.length > 10000) throw new Error('输入超过 10,000 个 UTF-16 码元，请分批整理。');
+  if (!['all', 'odd', 'even'].includes(filter)) throw new Error('请选择有效的页码筛选方式。');
+  const items = source.split(/[,，、\r\n]+/).map(item => item.trim()).filter(Boolean);
+  if (!items.length) throw new Error('请填写至少一个页码或范围。');
+  if (items.length > 200) throw new Error('最多支持 200 个单页或范围，请分批整理。');
+  const selected = new Uint8Array(total + 1);
+  let requested = 0;
+  for (const [index, item] of items.entries()) {
+    const label = '第 ' + (index + 1) + ' 项';
+    const match = item.match(/^(\d{1,5})(?:\s*[-–—~～至]\s*(\d{1,5}))?$/);
+    if (!match) throw new Error(label + '格式有误，请写成单页或完整范围，例如 3 或 3-5。');
+    const start = pageNumber(match[1], label + '页码', total);
+    const end = pageNumber(match[2] ?? match[1], label + '页码', total);
+    if (end < start) throw new Error(label + '的范围倒置，请把较小页码写在前面。');
+    selected.fill(1, start, end + 1);
+    requested += end - start + 1;
+  }
+  let uniqueCount = 0;
+  const pages = [];
+  for (let page = 1; page <= total; page += 1) {
+    if (!selected[page]) continue;
+    uniqueCount += 1;
+    if (filter === 'all' || (filter === 'odd' && page % 2 === 1) || (filter === 'even' && page % 2 === 0)) {
+      pages.push(page);
+    }
+  }
+  return {text: compressPages(pages), count: pages.length, duplicates: requested - uniqueCount, uniqueCount};
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('settings');
+const total = byId('total');
+const pages = byId('pages');
+const filter = byId('filter');
+const output = byId('output');
+const metrics = byId('metrics');
+const status = byId('status');
+const copy = byId('copy');
+const copyStatus = byId('copy-status');
+let revision = 0;
+
+function invalidate() {
+  revision += 1;
+  output.value = '';
+  metrics.hidden = true;
+  copy.disabled = true;
+  copyStatus.hidden = true;
+  status.removeAttribute('data-error');
+}
+
+function calculate() {
+  invalidate();
+  try {
+    const result = arrangePrintPages(total.value, pages.value, filter.value);
+    output.value = result.text;
+    metrics.textContent = '共 ' + result.count + ' 页 · 原选择去重后 ' + result.uniqueCount + ' 页 · 合并 ' + result.duplicates + ' 个重复页';
+    metrics.hidden = false;
+    copy.disabled = result.count === 0;
+    status.textContent = result.count
+      ? '已整理，请在打印窗口核对页序号与预览。'
+      : '所选页码中没有符合筛选条件的页。';
+  } catch (error) {
+    status.textContent = error.message;
+    status.setAttribute('data-error', '');
+  }
+}
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  calculate();
+});
+form.addEventListener('input', () => {
+  invalidate();
+  status.textContent = '选择已更新，请重新整理。';
+});
+byId('example').addEventListener('click', () => {
+  total.value = '12';
+  pages.value = '1, 3-5, 4, 8\n10-12';
+  filter.value = 'all';
+  calculate();
+});
+byId('clear').addEventListener('click', () => {
+  form.reset();
+  invalidate();
+  status.textContent = '已清空所选页码。';
+  total.focus();
+});
+copy.addEventListener('click', async () => {
+  const current = revision;
+  output.focus();
+  output.select();
+  copyStatus.textContent = '已选中页码，可按 Ctrl / ⌘ + C 手动复制。';
+  copyStatus.hidden = false;
+  try {
+    await navigator.clipboard.writeText(output.value);
+    if (current !== revision) return;
+    copyStatus.textContent = '已复制页码。';
+  } catch {
+    if (current !== revision) return;
+    copyStatus.textContent = '已选中页码，可按 Ctrl / ⌘ + C 手动复制。';
+  }
+  copyStatus.hidden = false;
+});
+</script>
+</body>
+</html>

@@ -228,5 +228,15 @@
     "path": "cart-threshold.html",
     "category": "日常购物",
     "test": "node --test test-cart-threshold.mjs"
+  },
+  {
+    "id": 24,
+    "date": "2026-11-13",
+    "slug": "print-pages",
+    "title": "打印页码整理器 / Print Pages",
+    "problem": "零散的打印页码和范围有重复、乱序或越界，需要整理成可复制的打印范围并核对总页数",
+    "path": "print-pages.html",
+    "category": "日常打印",
+    "test": "node --test test-print-pages.mjs"
   }
 ]
