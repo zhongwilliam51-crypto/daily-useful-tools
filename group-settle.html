@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="多人分别垫付后，按均摊金额生成精确到分的转账结算清单。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>多人垫付结算器 · Daily Useful Tools</title>
+<style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; --accent: #a64526; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+input, textarea, select, button { font: inherit; }
+input, textarea, select { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+textarea { display: block; min-height: 130px; resize: vertical; overflow-wrap: anywhere; }
+#output { font: 16px/1.7 ui-monospace, monospace; }
+.field { margin-top: 12px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair > div { min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+button:disabled { opacity: .48; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note, #status, #metrics, #copy-status { font-size: 14px; }
+#status { margin: 12px 0 0; }
+#status[data-error] { color: #9d2c22; }
+#metrics { margin: 10px 0; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 350px) { .pair { grid-template-columns: 1fr; } }
+
+#output { min-height: 310px; font-family: inherit; }
+#payments { min-height: 190px; }
+</style>
+</head>
+<body>
+<header><a class="brand" href="./index.html">↗ DAILY USEFUL TOOLS</a><span>025 / GROUP SETTLE</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub ↗</a></header>
+<main>
+<div class="eyebrow">日常社交</div>
+<h1>多人垫付结算器</h1>
+<p class="intro">旅途中有人付住宿、有人付餐费？把每个人的垫付总额列出来，算清均摊后谁该转给谁。</p>
+<div class="workspace">
+<section class="panel" aria-labelledby="input-heading">
+<h2 id="input-heading">01 / 每个人付过多少</h2>
+<form id="settings" autocomplete="off">
+<label for="payments">每行：姓名 + 空格 + 垫付总额</label>
+<textarea id="payments" spellcheck="false" aria-describedby="format-help" placeholder="小林 360&#10;小周 180&#10;小陈 0"></textarea>
+<p id="format-help" class="note">列出所有参与者，未付过填 0。全部费用由所有人均摊；同一人多笔支出先相加。同一币种，最多两位小数，不填货币符号或千位逗号。</p>
+<div class="actions"><button type="submit" class="primary">计算结算 ↗</button><button type="button" id="example">试试示例</button><button type="button" id="clear">清空</button></div>
+<p id="status" role="status">填入 2–30 人，每人垫付金额为 0–1,000,000。</p>
+</form>
+</section>
+<section class="panel result" aria-labelledby="result-heading">
+<h2 id="result-heading">02 / 核对并转账</h2>
+<label for="output">均摊明细与转账清单</label>
+<textarea id="output" readonly spellcheck="false" placeholder="这里会列出各自承担金额，以及最后需要的转账"></textarea>
+<div class="actions"><button id="copy" type="button" disabled>复制结算清单</button></div>
+<p id="copy-status" role="status" hidden></p>
+</section>
+</div>
+<p class="note">总额不能整分均摊时，按名单顺序给前几人各多分 0.01，每人承担最多相差 0.01。转账方案按名单顺序抵消应付与应收，最多人数减一笔，不保证笔数最少。</p>
+<p class="note">只用于全员均摊的费用。请先处理个人消费、不同分摊比例和已有还款，再核对清单。本页只计算，不会发起转账。</p>
+<footer>本地计算，不上传、不保存输入。下载本页后可离线使用。</footer>
+</main>
+<script id="group-settle-core">
+function money(cents) {
+  return Math.floor(cents / 100) + '.' + String(cents % 100).padStart(2, '0');
+}
+
+function settleGroup(source) {
+  if (source.length > 10000) throw new Error('输入最多 10,000 个 UTF-16 码元。');
+  const lines = source.split(/\r\n|\r|\n/).map(line => line.trim()).filter(Boolean);
+  if (lines.length < 2 || lines.length > 30) throw new Error('请列出 2–30 位参与者，包括未垫付的人。');
+  const names = new Set();
+  const people = lines.map((line, index) => {
+    const match = line.match(/^(.*?)\s+([0-9]+(?:\.[0-9]{1,2})?)$/u);
+    if (!match) throw new Error('第 ' + (index + 1) + ' 项请填写姓名、空格和非负金额（最多两位小数）。');
+    const name = match[1].trim().normalize('NFC');
+    if (!name || [...name].length > 40 || /[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]/u.test(name)) {
+      throw new Error('第 ' + (index + 1) + ' 项姓名须为 1–40 字，且不含控制字符。');
+    }
+    if (names.has(name)) throw new Error('第 ' + (index + 1) + ' 项姓名重复，请合并垫付金额或使用不同称呼。');
+    names.add(name);
+    const [whole, fraction = ''] = match[2].split('.');
+    const paid = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+    if (!Number.isSafeInteger(paid) || paid > 100000000) throw new Error('第 ' + (index + 1) + ' 项垫付金额须为 0–1,000,000。');
+    return {name, paid};
+  });
+  const total = people.reduce((sum, person) => sum + person.paid, 0);
+  const base = Math.floor(total / people.length);
+  const remainder = total % people.length;
+  people.forEach((person, index) => {
+    person.share = base + (index < remainder ? 1 : 0);
+    person.balance = person.paid - person.share;
+  });
+  const debtors = people.map((person, index) => ({index, remaining: -person.balance})).filter(person => person.remaining > 0);
+  const creditors = people.map((person, index) => ({index, remaining: person.balance})).filter(person => person.remaining > 0);
+  const transfers = [];
+  let d = 0;
+  let c = 0;
+  while (d < debtors.length && c < creditors.length) {
+    const amount = Math.min(debtors[d].remaining, creditors[c].remaining);
+    transfers.push({from: debtors[d].index, to: creditors[c].index, amount});
+    debtors[d].remaining -= amount;
+    creditors[c].remaining -= amount;
+    if (debtors[d].remaining === 0) d += 1;
+    if (creditors[c].remaining === 0) c += 1;
+  }
+  const text = ['多人垫付结算', '总支出：' + money(total) + '；参与者：' + people.length + ' 人', '', '各自承担：'];
+  for (const person of people) {
+    text.push(person.name + '：已付 ' + money(person.paid) + ' / 承担 ' + money(person.share));
+  }
+  text.push('', '最后转账：');
+  for (const transfer of transfers) text.push(people[transfer.from].name + ' → ' + people[transfer.to].name + '：' + money(transfer.amount));
+  if (transfers.length === 0) text.push('无需转账，大家已付清各自份额。');
+  text.push('', remainder ? '分钱尾差：名单前 ' + remainder + ' 人各多承担 0.01。' : '无分钱尾差。', '全部金额使用同一币种，按全员均摊计算。');
+  return {total, people, transfers, remainder, text: text.join('\n')};
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('settings');
+const payments = byId('payments');
+const output = byId('output');
+const status = byId('status');
+const copy = byId('copy');
+const copyStatus = byId('copy-status');
+let revision = 0;
+function invalidate() {
+  revision += 1;
+  output.value = '';
+  copy.disabled = true;
+  copyStatus.hidden = true;
+  status.removeAttribute('data-error');
+}
+function calculate() {
+  invalidate();
+  try {
+    const result = settleGroup(payments.value);
+    output.value = result.text;
+    copy.disabled = false;
+    status.textContent = '已核对 ' + result.people.length + ' 人；需转账 ' + result.transfers.length + ' 笔。';
+  } catch (error) {
+    status.textContent = error.message;
+    status.setAttribute('data-error', '');
+  }
+}
+form.addEventListener('submit', event => { event.preventDefault(); calculate(); });
+form.addEventListener('input', () => { invalidate(); status.textContent = '名单已更新，请重新计算。'; });
+payments.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); calculate(); }
+});
+byId('example').addEventListener('click', () => { payments.value = '小林 360\n小周 180\n小陈 0'; calculate(); });
+byId('clear').addEventListener('click', () => { payments.value = ''; invalidate(); status.textContent = '已清空名单。'; payments.focus(); });
+copy.addEventListener('click', async () => {
+  const current = revision;
+  output.focus();
+  output.select();
+  copyStatus.textContent = '已选中完整清单，可按 Ctrl / ⌘ + C 手动复制。';
+  copyStatus.hidden = false;
+  try {
+    await navigator.clipboard.writeText(output.value);
+    if (current !== revision) return;
+    copyStatus.textContent = '已复制结算清单。';
+  } catch {
+    if (current !== revision) return;
+  }
+});
+</script>
+</body>
+</html>

@@ -238,5 +238,15 @@
     "path": "print-pages.html",
     "category": "日常打印",
     "test": "node --test test-print-pages.mjs"
+  },
+  {
+    "id": 25,
+    "date": "2026-11-14",
+    "slug": "group-settle",
+    "title": "多人垫付结算器 / Group Settle",
+    "problem": "旅行或聚会中多人分别垫付了费用，均摊后不知道最后谁该转给谁多少钱",
+    "path": "group-settle.html",
+    "category": "日常社交",
+    "test": "node --test test-group-settle.mjs"
   }
 ]

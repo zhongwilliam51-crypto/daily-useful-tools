@@ -34,6 +34,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 022 | [香港时间换算器 / Hong Kong Time](./hong-kong-time.html) | 将香港时刻换算为六地日期和时间，核对跨日与夏令时 | 2026-11-11 |
 | 023 | [满减凑单计算器 / Cart Threshold](./cart-threshold.html) | 对照单次满减活动中凑单前后实付金额，算清支出差额 | 2026-11-12 |
 | 024 | [打印页码整理器 / Print Pages](./print-pages.html) | 整理零散打印页码，去重、合并范围并核对页数和越界 | 2026-11-13 |
+| 025 | [多人垫付结算器 / Group Settle](./group-settle.html) | 汇总多人垫付后的均摊份额，生成精确到分的转账清单 | 2026-11-14 |
+
+## 025 · 多人垫付结算器
+
+**[打开多人垫付结算器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/group-settle.html)**
+
+旅行或聚会中多人分别付过住宿、餐饮等费用时，每行填一个人的称呼、空格和垫付总额。列出所有参与者，未付过的人填 0，同一人的多笔支出先加总。点击“计算结算”后核对各人承担额及最后的转账清单，支持复制和 Ctrl / ⌘ + Enter。
+
+- 只计算全员均摊的共同费用，全部金额须为同一币种。个人消费、不同分摊比例和已经还过的钱须先另行处理。本页不会发起转账。
+- 示例：小林付 360、小周付 180、小陈付 0，总额 540，每人承担 180；小陈最后转给小林 180，小周无需再转。
+- 全程用整数分计算。总额除不尽时，按名单顺序给前几人各多分 0.01；各人承担最多相差 0.01，承担总额与支出一致。
+- 按名单顺序抵消应付与应收，不必逐笔互还原垫付款。转账最多人数减一笔，不保证笔数最少；总额为零或各人已付等于承担时无需转账。
+- 支持 2–30 人，空行忽略，每项垫付 0–1,000,000，最多两位小数。使用点，不接受货币符号、千位分隔符、负数和科学计数法。称呼可含空格，最多 40 个 Unicode 码点，不支持控制字符；经首尾去空白和 NFC 规范化后须唯一，区分大小写。
+- 原始输入最多 10,000 个 UTF-16 码元。修改输入会清除旧清单，复制时先选中完整结果，自动复制不可用时可手动复制。计算在浏览器本地完成，不上传、不保存，下载页面后可离线使用。
 
 ## 024 · 打印页码整理器
 
@@ -446,7 +460,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html` 或 `print-pages.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html` 或 `group-settle.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -464,6 +478,7 @@ node --test test-*.mjs
 ```
 
 测试直接读取工具页面的同一份核心逻辑。链接净化器覆盖追踪字段、功能参数、字节保留、签名链接、错误输入和批量上限；单价比较器覆盖单位换算、组合装、并列价格、计量分组、精确排序、输入错误与数值边界；清单去重器覆盖重复判定、空白处理、大小写、换行兼容、自然排序、计数一致性与容量上限；聚餐分账器覆盖分钱尾差、加权分摊、垫付者选择、零转账、输入边界，以及 500 组账单的金额守恒；图片缩小器覆盖横竖图尺寸、不放大、极端比例、像素与文件上限、选项校验和导出命名；食谱份量换算器覆盖小数与分数解析、份数边界、行完整性、舍入与极小用量、单位保留，以及 400 组比例的分数精度；日期推算器覆盖公历闰年、跨月跨年、周末起点与排除、范围边界、无效输入、夏令时日期与 500 组往返推算；随机分组器覆盖名单查重、字符与人数边界、拒绝采样、三人排列完整性，以及 500 组名单的成员守恒与组数均衡；时间段合计器覆盖时钟边界、24:00、重叠和跨午夜报错、排序、舍入、输入上限及 500 组时段的总时长与间隔关系；文件传输时间估算器覆盖比特与字节、十进制与二进制单位、速度比例、极小及大数值、输入边界，以及 500 组耗时向上取整验证；清单核对器覆盖缺少、多出、共有项、去重与大小写规则、换行和 Unicode、单侧空白、输入边界，以及 500 组集合划分与方向交换验证；文件校验器覆盖已知 SHA-256、空文件、二进制和 Unicode、文件改名、预期值和大小边界、读取与加密失败、独立摘要对照，以及旧异步结果隔离和复制拒绝回退；日历事件生成器覆盖 UTC+08:00 换算、跨午夜和跨年、全天含结束日、公历闰日、文本转义与注入防护、UTF-8 折行、字数和日期边界、事件标识，以及 500 组独立时区格式化往返验证；Wi-Fi 共享二维码覆盖内容转义、UTF-8 字节边界、空格保留、十六进制歧义、隐藏和无密码模式、固定编码器校验、二维码结构，以及旧导出隔离和 PNG 失败处理；出门时间倒推器覆盖跨午夜、跨年和公历闰日、步骤顺序与同名保留、零耗时、日期和输入边界、完整复制内容，以及 500 组时间表的时长守恒与连续性验证；联系人名片生成器覆盖必需字段、电话与邮箱边界、Unicode 字数、特殊字符转义与属性注入防护、UTF-8 折行与 CRLF，以及 500 组混合字符名片的独立解码往返验证。文本限额裁剪器覆盖三种计数规则、组合 emoji、重音符号、空白保留、输入边界及混合文本的最长前缀。打印缩放计算器覆盖边距、旋转、放大、向下取整、输入边界及 250 组可用区域与最大比例验证。表格转 Markdown 覆盖空格子、多行引号、列数校验、分隔符和格式转义及容量边界。共同空档查找器覆盖时段合并、相接端点、午夜、最短时长和输入边界，并对 150 组时间表逐分钟验证交集。电器用电估算器覆盖功率与时长换算、零用量、极小读数、选填单价和输入上限。香港时间换算器覆盖冬夏时差、夏令时切换与重复小时、跨月跨年、公历闰日及日期和时钟边界。满减凑单计算器覆盖门槛前后、已享优惠、零金额、分钱边界及实付差额关系。打印页码整理器覆盖去重、范围合并、奇偶筛选、页码边界及 150 组范围的独立展开核对，并验证剪贴板等待时的完整选中及过期完成隔离。
+ 多人垫付结算器覆盖多垫付者、零钱尾差、零支出、重复姓名、金额和人数边界，并对 500 组账目逐人核对转账后的净支出。
 
 ## 每日制作原则
 
