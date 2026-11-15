@@ -35,6 +35,19 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 023 | [满减凑单计算器 / Cart Threshold](./cart-threshold.html) | 对照单次满减活动中凑单前后实付金额，算清支出差额 | 2026-11-12 |
 | 024 | [打印页码整理器 / Print Pages](./print-pages.html) | 整理零散打印页码，去重、合并范围并核对页数和越界 | 2026-11-13 |
 | 025 | [多人垫付结算器 / Group Settle](./group-settle.html) | 汇总多人垫付后的均摊份额，生成精确到分的转账清单 | 2026-11-14 |
+| 026 | [复制断行整理器 / Unwrap Text](./unwrap-text.html) | 合并复制正文里的段内换行，按空行保留段落并选择中英文连接方式 | 2026-11-15 |
+
+## 026 · 复制断行整理器
+
+**[打开复制断行整理器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/unwrap-text.html)**
+
+从 PDF、邮件或网页复制的正文带有排版断行时，粘贴需要合并的部分，选好连接方式，再点击“整理断行”。每一段内部的非空行会连接起来，用空行隔开的段落继续分开。支持 Ctrl / ⌘ + Enter 和复制完整结果。
+
+- 中文正文可选“直接连接”，如 `复制的正文` 换行 `被打断。` → `复制的正文被打断。`。英文单词之间可选“加一个空格”，如 `Meet me` 换行 `at noon.` → `Meet me at noon.`。不自动识别语言，混合正文请核对连接处。
+- 去掉各行首尾空白，行内文字、空格与 Tab 保留。多个连续空行统一为一个空行，开头和结尾的空行去掉。支持 CRLF、LF 和 CR 换行，结果使用 LF。
+- 标题、列表、地址、代码和诗歌的换行可能有意义，请分开整理，或先用空行隔开。段落之间原本没有空行时，须先补上。不会猜测语义、删除行末连字符、修复断词或改写内容；只处理粘贴文字，不读取 PDF 文件。
+- 最多 100,000 个 UTF-16 码元和 5,000 行（含空行）。空白输入与超限会报错，不截断原文。结果显示原文非空行数、段落数及合并的段内换行数。
+- 修改原文或连接方式会清除旧结果。复制时先选中完整正文，自动复制不可用时可手动复制。本地处理，不上传、不保存输入，下载页面后可离线使用。
 
 ## 025 · 多人垫付结算器
 
@@ -460,7 +473,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html` 或 `group-settle.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html` 或 `unwrap-text.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -479,6 +492,8 @@ node --test test-*.mjs
 
 测试直接读取工具页面的同一份核心逻辑。链接净化器覆盖追踪字段、功能参数、字节保留、签名链接、错误输入和批量上限；单价比较器覆盖单位换算、组合装、并列价格、计量分组、精确排序、输入错误与数值边界；清单去重器覆盖重复判定、空白处理、大小写、换行兼容、自然排序、计数一致性与容量上限；聚餐分账器覆盖分钱尾差、加权分摊、垫付者选择、零转账、输入边界，以及 500 组账单的金额守恒；图片缩小器覆盖横竖图尺寸、不放大、极端比例、像素与文件上限、选项校验和导出命名；食谱份量换算器覆盖小数与分数解析、份数边界、行完整性、舍入与极小用量、单位保留，以及 400 组比例的分数精度；日期推算器覆盖公历闰年、跨月跨年、周末起点与排除、范围边界、无效输入、夏令时日期与 500 组往返推算；随机分组器覆盖名单查重、字符与人数边界、拒绝采样、三人排列完整性，以及 500 组名单的成员守恒与组数均衡；时间段合计器覆盖时钟边界、24:00、重叠和跨午夜报错、排序、舍入、输入上限及 500 组时段的总时长与间隔关系；文件传输时间估算器覆盖比特与字节、十进制与二进制单位、速度比例、极小及大数值、输入边界，以及 500 组耗时向上取整验证；清单核对器覆盖缺少、多出、共有项、去重与大小写规则、换行和 Unicode、单侧空白、输入边界，以及 500 组集合划分与方向交换验证；文件校验器覆盖已知 SHA-256、空文件、二进制和 Unicode、文件改名、预期值和大小边界、读取与加密失败、独立摘要对照，以及旧异步结果隔离和复制拒绝回退；日历事件生成器覆盖 UTC+08:00 换算、跨午夜和跨年、全天含结束日、公历闰日、文本转义与注入防护、UTF-8 折行、字数和日期边界、事件标识，以及 500 组独立时区格式化往返验证；Wi-Fi 共享二维码覆盖内容转义、UTF-8 字节边界、空格保留、十六进制歧义、隐藏和无密码模式、固定编码器校验、二维码结构，以及旧导出隔离和 PNG 失败处理；出门时间倒推器覆盖跨午夜、跨年和公历闰日、步骤顺序与同名保留、零耗时、日期和输入边界、完整复制内容，以及 500 组时间表的时长守恒与连续性验证；联系人名片生成器覆盖必需字段、电话与邮箱边界、Unicode 字数、特殊字符转义与属性注入防护、UTF-8 折行与 CRLF，以及 500 组混合字符名片的独立解码往返验证。文本限额裁剪器覆盖三种计数规则、组合 emoji、重音符号、空白保留、输入边界及混合文本的最长前缀。打印缩放计算器覆盖边距、旋转、放大、向下取整、输入边界及 250 组可用区域与最大比例验证。表格转 Markdown 覆盖空格子、多行引号、列数校验、分隔符和格式转义及容量边界。共同空档查找器覆盖时段合并、相接端点、午夜、最短时长和输入边界，并对 150 组时间表逐分钟验证交集。电器用电估算器覆盖功率与时长换算、零用量、极小读数、选填单价和输入上限。香港时间换算器覆盖冬夏时差、夏令时切换与重复小时、跨月跨年、公历闰日及日期和时钟边界。满减凑单计算器覆盖门槛前后、已享优惠、零金额、分钱边界及实付差额关系。打印页码整理器覆盖去重、范围合并、奇偶筛选、页码边界及 150 组范围的独立展开核对，并验证剪贴板等待时的完整选中及过期完成隔离。
  多人垫付结算器覆盖多垫付者、零钱尾差、零支出、重复姓名、金额和人数边界，并对 500 组账目逐人核对转账后的净支出。
+
+复制断行整理器覆盖两种连接方式、空行分段、不同换行符、首尾与行内空白、连字符及 Unicode 保留、容量边界，并验证 300 组多段正文与复制等待时的旧结果隔离。
 
 ## 每日制作原则
 

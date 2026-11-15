@@ -248,5 +248,15 @@
     "path": "group-settle.html",
     "category": "日常社交",
     "test": "node --test test-group-settle.mjs"
+  },
+  {
+    "id": 26,
+    "date": "2026-11-15",
+    "slug": "unwrap-text",
+    "title": "复制断行整理器 / Unwrap Text",
+    "problem": "从 PDF 或邮件复制的正文带有排版断行，需要合并段内换行并保留段落",
+    "path": "unwrap-text.html",
+    "category": "日常文字",
+    "test": "node --test test-unwrap-text.mjs"
   }
 ]
