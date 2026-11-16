@@ -36,6 +36,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 024 | [打印页码整理器 / Print Pages](./print-pages.html) | 整理零散打印页码，去重、合并范围并核对页数和越界 | 2026-11-13 |
 | 025 | [多人垫付结算器 / Group Settle](./group-settle.html) | 汇总多人垫付后的均摊份额，生成精确到分的转账清单 | 2026-11-14 |
 | 026 | [复制断行整理器 / Unwrap Text](./unwrap-text.html) | 合并复制正文里的段内换行，按空行保留段落并选择中英文连接方式 | 2026-11-15 |
+| 027 | [字幕时间校准器 / Subtitle Shift](./subtitle-shift.html) | 将 SRT 字幕统一提前或延后，精确到毫秒并下载新文件 | 2026-11-16 |
+
+## 027 · 字幕时间校准器
+
+**[打开字幕时间校准器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/subtitle-shift.html)**
+
+SRT 字幕比声音早或晚时，选择本地 UTF-8 字幕文件或粘贴内容，选择“延后”或“提前”和秒数，点击“调整字幕”，核对结果后下载 `adjusted.srt`，再在播放器中载入。字幕出现太早用“延后”，出现太晚用“提前”。SRT 由序号、起止时间和正文组成，格式背景见 [美国国会图书馆 SRT 说明](https://www.loc.gov/preservation/digital/formats/fdd/fdd000569.shtml)。
+
+- 移动量为 0–3,600 秒，最多三位小数，按整数毫秒计算。示例延后 1.5 秒，将 `00:00:02,000 --> 00:00:04,000` 变为 `00:00:03,500 --> 00:00:05,500`。
+- 提前后结束时间小于或等于 0 的条目移除；仍跨过 0 的条目只将开始时间改为 0。显示移除和裁切条数，全部移除时禁用下载与复制。其余条目保持时长和原顺序，不排序、不消除重叠。
+- 普通 SRT 时间须为两位小时、两位分秒和三位毫秒，以逗号分隔毫秒。结束须晚于开始；调整后不得超过 `99:59:59,999`。仅接受纯时间行，不支持坐标、ASS 或 WebVTT；遇到错误整次停止并指出条目位置。
+- 正文（含多行、空格和标签）原样保留，只规范换行及重新连续编号。输入接受 CRLF、LF、CR 和开头 BOM，空白行分隔条目。输出为 UTF-8 无 BOM、CRLF 换行，文件名固定为 `adjusted.srt`，不覆盖原文件。
+- 文件上限 2 MiB，只解码 UTF-8，旧编码须先另存为 UTF-8。内容上限 1,000,000 个 UTF-16 码元、5,000 条字幕。修改输入清除旧结果，较早的文件读取不会覆盖新输入；支持 Ctrl / ⌘ + Enter 和手动复制。
+- 适用于固定时间偏移。越播越不同步需要校正时间比例或核对视频版本，本工具不处理这种漂移。所有内容在浏览器本地处理，不上传、不保存，下载页面后可离线使用。
 
 ## 026 · 复制断行整理器
 
@@ -473,7 +487,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html` 或 `unwrap-text.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html` 或 `subtitle-shift.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -494,6 +508,8 @@ node --test test-*.mjs
  多人垫付结算器覆盖多垫付者、零钱尾差、零支出、重复姓名、金额和人数边界，并对 500 组账目逐人核对转账后的净支出。
 
 复制断行整理器覆盖两种连接方式、空行分段、不同换行符、首尾与行内空白、连字符及 Unicode 保留、容量边界，并验证 300 组多段正文与复制等待时的旧结果隔离。
+
+字幕时间校准器覆盖毫秒偏移、跨时分、零点裁切与移除、格式与容量边界、UTF-8 解码，以及 300 组字幕往返偏移与旧异步结果隔离。
 
 ## 每日制作原则
 

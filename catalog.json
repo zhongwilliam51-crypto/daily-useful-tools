@@ -258,5 +258,15 @@
     "path": "unwrap-text.html",
     "category": "日常文字",
     "test": "node --test test-unwrap-text.mjs"
+  },
+  {
+    "id": 27,
+    "date": "2026-11-16",
+    "slug": "subtitle-shift",
+    "title": "字幕时间校准器 / Subtitle Shift",
+    "problem": "SRT 字幕比声音早或晚，需要统一提前或延后并保存新字幕文件",
+    "path": "subtitle-shift.html",
+    "category": "日常影音",
+    "test": "node --test test-subtitle-shift.mjs"
   }
 ]
