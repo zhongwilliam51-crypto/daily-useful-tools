@@ -268,5 +268,15 @@
     "path": "subtitle-shift.html",
     "category": "日常影音",
     "test": "node --test test-subtitle-shift.mjs"
+  },
+  {
+    "id": 28,
+    "date": "2026-11-17",
+    "slug": "text-diff",
+    "title": "文字差异对比器 / Text Diff",
+    "problem": "核对邮件、通知或笔记的两个版本时，容易漏看新增、删除及空白变化",
+    "path": "text-diff.html",
+    "category": "日常核对",
+    "test": "node --test test-text-diff.mjs"
   }
 ]

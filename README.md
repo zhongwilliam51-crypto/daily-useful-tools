@@ -37,6 +37,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 025 | [多人垫付结算器 / Group Settle](./group-settle.html) | 汇总多人垫付后的均摊份额，生成精确到分的转账清单 | 2026-11-14 |
 | 026 | [复制断行整理器 / Unwrap Text](./unwrap-text.html) | 合并复制正文里的段内换行，按空行保留段落并选择中英文连接方式 | 2026-11-15 |
 | 027 | [字幕时间校准器 / Subtitle Shift](./subtitle-shift.html) | 将 SRT 字幕统一提前或延后，精确到毫秒并下载新文件 | 2026-11-16 |
+| 028 | [文字差异对比器 / Text Diff](./text-diff.html) | 对照修改前后的文字，按完整字符标出新增、删除和空白变化 | 2026-11-17 |
+
+## 028 · 文字差异对比器
+
+**[打开文字差异对比器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/text-diff.html)**
+
+把邮件、通知或笔记的两个版本分别贴入“原文”和“新版本”，点击“对比文字”，或按 Ctrl / ⌘ + Enter。下方对照用绿色下划线标出新增、红色删除线标出删除，普通文字为保留内容，并显示字符计数。
+
+- 按浏览器 Intl.Segmenter 的字素簇比较完整字符，组合 emoji、带重音的组合字符不会被拆开。每侧最多 1,500 个完整字符，原始输入另限 20,000 个 UTF-16 码元。需要支持 Intl.Segmenter 的浏览器。
+- 输入换行统一为 LF，支持 CRLF、LF 和 CR。除此之外不修剪、不忽略空格，不统一大小写或 Unicode 编码写法；格式标签只作为普通文本，不执行或渲染 HTML。
+- 勾选“显示空白符”可将普通空格显示为 `·`、Tab 为 `⇥`、换行为 `↵` 加实际换行，仅改变显示，不改变比较结果。其他空白字符保持原样。
+- 任意一侧可留空；两侧均空或文字一致会明确提示。修改任一输入立即清除旧结果，显示空白符的切换可直接作用于已有对照。
+- 使用最长公共子序列生成只含插入与删除的最短对照，保持两个版本的字符顺序。文字移动显示为删除后新增；遇到重复内容时，可能存在多种同样简短的对照，固定选择其中一种，不推断修改意图。
+- 本工具只比较纯文本，不核对排版或附件。长文请分段处理。全部在浏览器本地计算，不上传、不保存输入，下载页面后可离线使用。
 
 ## 027 · 字幕时间校准器
 
@@ -487,7 +501,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html` 或 `subtitle-shift.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html` 或 `text-diff.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -510,6 +524,8 @@ node --test test-*.mjs
 复制断行整理器覆盖两种连接方式、空行分段、不同换行符、首尾与行内空白、连字符及 Unicode 保留、容量边界，并验证 300 组多段正文与复制等待时的旧结果隔离。
 
 字幕时间校准器覆盖毫秒偏移、跨时分、零点裁切与移除、格式与容量边界、UTF-8 解码，以及 300 组字幕往返偏移与旧异步结果隔离。
+
+文字差异对比器覆盖插入、删除、替换、重复文字、完整 Unicode 字符、空白与换行及输入边界，并验证双侧原文重建和独立最短编辑次数核对。
 
 ## 每日制作原则
 
