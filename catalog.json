@@ -278,5 +278,15 @@
     "path": "text-diff.html",
     "category": "日常核对",
     "test": "node --test test-text-diff.mjs"
+  },
+  {
+    "id": 29,
+    "date": "2026-11-23",
+    "slug": "box-fit",
+    "title": "收纳尺寸检查器 / Box Fit",
+    "problem": "收纳或打包前，不清楚物品旋转后能否满足容器内部三边尺寸及预留空隙",
+    "path": "box-fit.html",
+    "category": "日常收纳",
+    "test": "node --test test-box-fit.mjs"
   }
 ]

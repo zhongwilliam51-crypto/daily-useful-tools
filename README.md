@@ -38,6 +38,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 026 | [复制断行整理器 / Unwrap Text](./unwrap-text.html) | 合并复制正文里的段内换行，按空行保留段落并选择中英文连接方式 | 2026-11-15 |
 | 027 | [字幕时间校准器 / Subtitle Shift](./subtitle-shift.html) | 将 SRT 字幕统一提前或延后，精确到毫秒并下载新文件 | 2026-11-16 |
 | 028 | [文字差异对比器 / Text Diff](./text-diff.html) | 对照修改前后的文字，按完整字符标出新增、删除和空白变化 | 2026-11-17 |
+| 029 | [收纳尺寸检查器 / Box Fit](./box-fit.html) | 检查物品旋转后的三边尺寸，算清预留空隙后的余量或缺口 | 2026-11-23 |
+
+## 029 · 收纳尺寸检查器
+
+**[打开收纳尺寸检查器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/box-fit.html)**
+
+搬家、打包或收纳前，填入一件物品的最外侧长宽高和容器实际可用的内长宽高，选是否允许旋转，点击“检查摆放”。所有尺寸统一使用厘米。结果列出不同朝向及各边余量，可复制完整尺寸清单，也支持 Ctrl / ⌘ + Enter。
+
+- 三条外尺寸与内尺寸均为 0.1–500 cm，最多一位小数；每面预留空隙为 0–10 cm。内部按整数毫米计算，避免贴合边界被浮点误差误判。
+- 空隙逐面扣除：三条内部尺寸各减去两倍预留量。可用尺寸小于或等于零时提示修改。余量表示扣除预留量后的总间隙，正数为剩余空间、负数为缺口、零为按输入尺寸刚好贴合。
+- 允许旋转时检查最多六种边互相平行的直角朝向，相同尺寸组合只列一次；不允许旋转时只按输入长宽高逐边比较。不计算斜放、多物品装箱或容积利用率。
+- 示例：物品 30 × 20 × 10 cm，内部 25 × 35 × 15 cm，每面留 1 cm。物品原宽、原长、原高分别沿内长、内宽、内高时，摆放尺寸为 20 × 30 × 10，各边余量都是 3 cm；六种朝向中仅这一种满足条件。
+- 请量物品的长方体外包尺寸，包含把手、凸出部分和包装。另行核对箱口、铰链、轮子和内部障碍。结果只验证几何尺寸，不保证能穿过入口或方便取放。
+- 修改输入清除旧结果。复制时打开文字清单并选中完整结果，自动复制不可用时可手动复制。计算完全在本地进行，不上传、不保存输入，下载页面后可离线使用。
 
 ## 028 · 文字差异对比器
 
@@ -501,7 +515,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html` 或 `text-diff.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html` 或 `box-fit.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -526,6 +540,8 @@ node --test test-*.mjs
 字幕时间校准器覆盖毫秒偏移、跨时分、零点裁切与移除、格式与容量边界、UTF-8 解码，以及 300 组字幕往返偏移与旧异步结果隔离。
 
 文字差异对比器覆盖插入、删除、替换、重复文字、完整 Unicode 字符、空白与换行及输入边界，并验证双侧原文重建和独立最短编辑次数核对。
+
+收纳尺寸检查器覆盖旋转、相同边去重、预留空隙、贴合和超界、容量与格式边界，并对 500 组尺寸用独立排序判定核对可行朝向。
 
 ## 每日制作原则
 
