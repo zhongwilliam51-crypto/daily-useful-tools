@@ -39,6 +39,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 027 | [字幕时间校准器 / Subtitle Shift](./subtitle-shift.html) | 将 SRT 字幕统一提前或延后，精确到毫秒并下载新文件 | 2026-11-16 |
 | 028 | [文字差异对比器 / Text Diff](./text-diff.html) | 对照修改前后的文字，按完整字符标出新增、删除和空白变化 | 2026-11-17 |
 | 029 | [收纳尺寸检查器 / Box Fit](./box-fit.html) | 检查物品旋转后的三边尺寸，算清预留空隙后的余量或缺口 | 2026-11-23 |
+| 030 | [轮值排班器 / Duty Roster](./duty-roster.html) | 按名单循环安排每日或每周轮值，核对日期、星期和各人次数 | 2026-11-24 |
+
+## 030 · 轮值排班器
+
+**[打开轮值排班器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/duty-roster.html)**
+
+为倒垃圾、组会记录等固定任务生成轮值表：每行填一位成员，选开始日期、每日或每周轮换，再填生成次数。点击“生成轮值表”，核对日期、星期和负责人后复制，或下载 UTF-8 的 `roster.txt`。支持 Ctrl / ⌘ + Enter。
+
+- 第一行成员负责开始日期，之后按名单顺序循环，每次一人。“每日”为每隔 1 个日历天；“每周”为每隔 7 个日历天、同一星期几。接续旧安排时将下一位排到第一行。
+- 显示每次轮值的完整日期和星期，并列出所有成员各自的次数，包括 0 次。次数除不尽时前面的成员会多一次，生成次数少于人数时有成员未轮到。
+- 示例：小林、小周、小陈从 2026-11-30 起每周轮换，共 6 次；最后一次为 2027-01-04，小陈负责，各人均为 2 次。
+- 支持 2–30 人、1–100 次。称呼去首尾空白并做 NFC 规范化，区分大小写且不能重复；同名者请加编号。每人最多 40 个 Unicode 码点，原始名单最多 5,000 个 UTF-16 码元，空行忽略，不支持控制字符。
+- 开始和结果日期须在 1900-01-01 至 2100-12-31 内。按完整日历日期计算，不受设备夏令时影响。包含周末和节假日，不读取个人日程，也不处理请假或自动调班，请核对实际安排。
+- 修改输入立即清除旧结果。复制时先选中完整清单，自动复制不可用时可手动复制。全部在本地处理，不上传、不保存输入，下载页面后可离线使用。
 
 ## 029 · 收纳尺寸检查器
 
@@ -515,7 +529,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html` 或 `box-fit.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html` 或 `duty-roster.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -542,6 +556,8 @@ node --test test-*.mjs
 文字差异对比器覆盖插入、删除、替换、重复文字、完整 Unicode 字符、空白与换行及输入边界，并验证双侧原文重建和独立最短编辑次数核对。
 
 收纳尺寸检查器覆盖旋转、相同边去重、预留空隙、贴合和超界、容量与格式边界，并对 500 组尺寸用独立排序判定核对可行朝向。
+
+轮值排班器覆盖轮换顺序、跨月跨年、公历闰日、每日与每周间隔、重复姓名和日期边界，并验证 400 组安排的日期间隔、成员次数及顺序守恒。
 
 ## 每日制作原则
 

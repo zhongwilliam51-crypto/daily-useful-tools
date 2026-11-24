@@ -288,5 +288,15 @@
     "path": "box-fit.html",
     "category": "日常收纳",
     "test": "node --test test-box-fit.mjs"
+  },
+  {
+    "id": 30,
+    "date": "2026-11-24",
+    "slug": "duty-roster",
+    "title": "轮值排班器 / Duty Roster",
+    "problem": "室友或小组固定任务需要按名单轮流负责，手工排日期和接续顺序容易出错",
+    "path": "duty-roster.html",
+    "category": "日常协作",
+    "test": "node --test test-duty-roster.mjs"
   }
 ]
