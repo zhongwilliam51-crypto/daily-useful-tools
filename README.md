@@ -40,6 +40,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 028 | [文字差异对比器 / Text Diff](./text-diff.html) | 对照修改前后的文字，按完整字符标出新增、删除和空白变化 | 2026-11-17 |
 | 029 | [收纳尺寸检查器 / Box Fit](./box-fit.html) | 检查物品旋转后的三边尺寸，算清预留空隙后的余量或缺口 | 2026-11-23 |
 | 030 | [轮值排班器 / Duty Roster](./duty-roster.html) | 按名单循环安排每日或每周轮值，核对日期、星期和各人次数 | 2026-11-24 |
+| 031 | [本地提词器 / Teleprompter](./teleprompter.html) | 以大字和可调速度滚动口播稿，暂停、继续并手动定位 | 2026-11-25 |
+
+## 031 · 本地提词器
+
+**[打开本地提词器 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/teleprompter.html)**
+
+练习汇报、演讲或录制口播时，粘贴稿件并点击“载入提词”，编辑区自动收起。用滑块设置字号和速度，点击“开始滚动”，读到需要停顿的地方再暂停。重新展开“编辑稿件”即可修改正文。
+
+- 稿件最多 20,000 个 UTF-16 码元，保留正文、空格、段落和换行，只统一 CRLF、CR 为 LF。标签作为纯文本显示。空白稿件或无效 Unicode 会报错，不截断内容。
+- 字号 20–64 px，速度 10–100 px/秒。按逐帧经过的时间推进，保留小数位置，低速也能持续前进。单帧最多推进 0.1 秒的路程，卡顿时宁可慢一些，不突然跳过大段文字；速度是视觉滚动速度，不是字数或语速。
+- 点击暂停后保留位置；“回到顶部”停止并回到开头。到末尾自动停止，再次开始会从头滚动。短稿全文已显示时会提示无需滚动。
+- 提词阅读区获得焦点时，空格键切换开始和暂停；滚轮、触碰阅读区或使用方向、翻页、Home、End 键会先暂停，便于手动定位。切换到后台自动暂停，回来后手动继续。
+- 修改正文立即清除旧提词并停止，须重新载入；调字号暂停并回到顶部，调速度暂停并保留当前位置。浏览器缩放、设备大小和字体会影响实际可见行数。
+- 不调用摄像头、麦克风或语音识别，不上传、不保存稿件。刷新后输入丢弃，下载页面后可离线使用，无需注册或安装依赖。
 
 ## 030 · 轮值排班器
 
@@ -529,7 +543,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html` 或 `duty-roster.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html` 或 `teleprompter.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -558,6 +572,8 @@ node --test test-*.mjs
 收纳尺寸检查器覆盖旋转、相同边去重、预留空隙、贴合和超界、容量与格式边界，并对 500 组尺寸用独立排序判定核对可行朝向。
 
 轮值排班器覆盖轮换顺序、跨月跨年、公历闰日、每日与每周间隔、重复姓名和日期边界，并验证 400 组安排的日期间隔、成员次数及顺序守恒。
+
+本地提词器覆盖文本保留、字号与速度范围、分数滚动累计、卡顿限幅、末尾停止，以及暂停、旧动画回调与稿件编辑隔离。
 
 ## 每日制作原则
 

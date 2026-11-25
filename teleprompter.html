@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="本地大字提词器，粘贴口播稿后自动滚动，可调字号、速度和暂停。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>本地提词器 · Daily Useful Tools</title><style>
+:root { color-scheme: light; --ink: #243b31; --muted: #526258; --line: #d5dbcf; --paper: #fffef9; --accent: #a64526; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: #f5f3ea; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; text-underline-offset: 4px; }
+header, main { max-width: 1120px; margin: auto; padding: 24px 28px; }
+header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.brand { font-weight: 750; letter-spacing: .06em; text-decoration: none; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; }
+h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.15; margin: 12px 0; }
+.intro, .note { color: var(--muted); }
+.intro { margin: 0 0 24px; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 20px; }
+.result { background: #edf2e8; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 650; }
+input, textarea, select, button { font: inherit; }
+input, textarea, select { width: 100%; min-width: 0; color: inherit; background: var(--paper); border: 1px solid #aebaae; border-radius: 7px; padding: 9px 10px; }
+textarea { display: block; min-height: 130px; resize: vertical; overflow-wrap: anywhere; }
+#output { font: 16px/1.7 ui-monospace, monospace; }
+.field { margin-top: 12px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair > div { min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { min-height: 44px; cursor: pointer; border-radius: 7px; border: 1px solid #aebaae; background: var(--paper); color: var(--ink); padding: 7px 12px; }
+.primary { background: var(--ink); color: white; border-color: var(--ink); }
+button:disabled { opacity: .48; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note, #status, #metrics, #copy-status { font-size: 14px; }
+#status { margin: 12px 0 0; }
+#status[data-error] { color: #9d2c22; }
+#metrics { margin: 10px 0; }
+footer { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 15px; font-size: 13px; color: var(--muted); }
+@media (max-width: 720px) {
+  header, main { padding: 18px; }
+  .workspace { grid-template-columns: 1fr; gap: 14px; }
+  .panel { padding: 15px; }
+}
+@media (max-width: 350px) { .pair { grid-template-columns: 1fr; } }
+
+details { margin-bottom:18px; } summary { cursor:pointer; font-weight:650; min-height:44px; }
+#source { min-height:170px; }
+.controls { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:14px; }
+input[type=range] { padding:8px 0; border:0; accent-color:#243b31; }
+#reader { height:55vh; min-height:260px; max-height:550px; overflow:auto; background:#172b23; color:#fffef9; border-radius:10px; padding:22px; margin-top:16px; overscroll-behavior:contain; }
+#prompt { white-space:pre-wrap; overflow-wrap:anywhere; font-size:36px; line-height:1.8; margin:0; }
+#reading-status { font-size:14px; margin:12px 0; }
+@media(max-width:720px) { #reader { padding:18px; } .controls { gap:12px; } }
+</style></head><body>
+<header><a class="brand" href="./index.html">DAILY USEFUL TOOLS</a><span>TELEPROMPTER</span><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub</a></header>
+<main><div class="eyebrow">日常表达</div><h1>本地提词器</h1><p class="intro">练习汇报或录制口播时，把稿件放大、缓慢滚动，按自己的节奏阅读。</p>
+<details class="panel" id="editor" open><summary>编辑稿件</summary><form id="settings" autocomplete="off"><label for="source">演讲稿或口播稿</label><textarea id="source" spellcheck="false" placeholder="粘贴需要阅读的稿件，保留段落和换行。"></textarea><div class="actions"><button class="primary" type="submit">载入提词</button><button id="example" type="button">试试示例</button><button id="clear" type="button">清空</button></div><p id="status" role="status">最多 20,000 个 UTF-16 码元，不上传、不保存稿件。</p></form></details>
+<section class="panel" aria-labelledby="reader-heading"><h2 id="reader-heading">提词窗口</h2><div class="controls"><div><label for="font">字号：<span id="font-value">36</span> px</label><input type="range" id="font" min="20" max="64" step="1" value="36"></div><div><label for="speed">速度：<span id="speed-value">30</span> px / 秒</label><input type="range" id="speed" min="10" max="100" step="1" value="30"></div></div>
+<div class="actions"><button id="play" type="button" class="primary" disabled>开始滚动</button><button id="top" type="button" disabled>回到顶部</button></div><p id="reading-status" role="status">先载入稿件，再开始滚动。</p><div id="reader" tabindex="0" role="region" aria-label="提词阅读区"><p id="prompt"></p></div></section>
+<p class="note">空格键在提词阅读区内切换开始与暂停。触碰阅读区或使用滚轮会暂停，便于手动定位。切换到后台也会暂停，返回后需手动继续。</p>
+<p class="note">改稿后须重新载入。调字号会暂停并回到顶部，调速度会暂停并保留位置。到达末尾后再次开始会从头滚动；全文已显示时无需滚动。短暂卡顿会减慢进度，避免突然跳过大段稿件。</p>
+<footer>本地阅读，不调用摄像头或麦克风。下载本页后可离线使用。</footer></main>
+<script id="teleprompter-core">
+function promptSettings(source, fontRaw, speedRaw) {
+  if (source.length > 20000) throw new Error('稿件最多 20,000 个 UTF-16 码元，请分段载入。');
+  if (!source.trim()) throw new Error('请先填入需要阅读的稿件。');
+  if (/\p{Cs}/u.test(source)) throw new Error('稿件含无效 Unicode 字符，请重新复制。');
+  const integer = (raw, min, max, label) => {
+    if (!/^\d{1,3}$/.test(raw) || Number(raw) < min || Number(raw) > max) throw new Error(label + '须为 ' + min + '–' + max + ' 的整数。');
+    return Number(raw);
+  };
+  return {text:source.replace(/\r\n?/g,'\n'), font:integer(fontRaw,20,64,'字号'), speed:integer(speedRaw,10,100,'速度')};
+}
+function promptStep(position, maximum, elapsed, speed) {
+  if (![position, maximum, elapsed, speed].every(Number.isFinite) || position < 0 || maximum < 0 || elapsed < 0 || speed < 10 || speed > 100) throw new Error('滚动参数无效。');
+  const next = Math.min(maximum, position + Math.min(elapsed,100) * speed / 1000);
+  return {position:next, done:next >= maximum};
+}
+</script>
+<script>
+const byId = id => document.getElementById(id);
+const form = byId('settings'), source = byId('source'), editor = byId('editor'), status = byId('status');
+const font = byId('font'), speed = byId('speed'), reader = byId('reader'), prompt = byId('prompt');
+const play = byId('play'), topButton = byId('top'), readingStatus = byId('reading-status');
+let loaded = false, playing = false, frame = null, last = null, position = 0, generation = 0;
+function pause(message) {
+  playing = false; generation += 1;
+  if (frame !== null) cancelAnimationFrame(frame);
+  frame = null; last = null; play.textContent = '开始滚动';
+  if (message) readingStatus.textContent = message;
+}
+function tick(timestamp, token) {
+  if (!playing || token !== generation) return;
+  if (last !== null) {
+    const result = promptStep(position, Math.max(0,reader.scrollHeight-reader.clientHeight), Math.max(0,timestamp-last), Number(speed.value));
+    position = result.position; reader.scrollTop = position;
+    if (result.done) {pause('已到达末尾，再次开始会从头滚动。'); return;}
+  }
+  last = timestamp; frame = requestAnimationFrame(next => tick(next, token));
+}
+function toggle() {
+  if (!loaded) return;
+  if (playing) {pause('已暂停，可从当前位置继续。'); return;}
+  const maximum = Math.max(0,reader.scrollHeight-reader.clientHeight);
+  if (maximum <= 0) {readingStatus.textContent = '全文已显示，无需滚动。'; return;}
+  if (reader.scrollTop >= maximum-1) reader.scrollTop = 0;
+  position = reader.scrollTop; last = null; playing = true; generation += 1;
+  play.textContent = '暂停滚动'; readingStatus.textContent = '正在滚动；可随时暂停。';
+  const token = generation; frame = requestAnimationFrame(timestamp => tick(timestamp,token));
+  reader.focus({preventScroll:true});
+}
+function load() {
+  pause(); loaded = false; prompt.textContent = ''; play.disabled = topButton.disabled = true; status.removeAttribute('data-error');
+  try {
+    const settings = promptSettings(source.value,font.value,speed.value);
+    prompt.textContent = settings.text; prompt.style.fontSize = settings.font + 'px'; reader.scrollTop = 0;
+    loaded = true; play.disabled = topButton.disabled = false; editor.open = false;
+    status.textContent = '稿件已载入。'; readingStatus.textContent = '已就绪，点击开始滚动。';
+  } catch(error) {status.textContent = error.message; status.setAttribute('data-error',''); readingStatus.textContent = '请先载入有效稿件。';}
+}
+form.addEventListener('submit',event=>{event.preventDefault();load();});
+source.addEventListener('input',()=>{pause('稿件已修改，请重新载入。'); loaded=false; prompt.textContent=''; play.disabled=topButton.disabled=true; status.removeAttribute('data-error'); status.textContent='稿件已更新，请重新载入。';});
+font.addEventListener('input',()=>{pause(loaded?'字号已更新，已暂停并回到顶部。':'先载入稿件。'); byId('font-value').textContent=font.value; prompt.style.fontSize=font.value+'px'; reader.scrollTop=0;});
+speed.addEventListener('input',()=>{pause(loaded?'速度已更新，可从当前位置继续。':'先载入稿件。');byId('speed-value').textContent=speed.value;});
+play.addEventListener('click',toggle);
+topButton.addEventListener('click',()=>{pause('已回到顶部。');reader.scrollTop=0;});
+reader.addEventListener('keydown',event=>{
+  if(event.code==='Space'){event.preventDefault();toggle();}
+  else if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End'].includes(event.key)) pause('已暂停，可手动定位。');
+});
+reader.addEventListener('wheel',()=>{if(playing) pause('已暂停，可手动定位。');},{passive:true});
+reader.addEventListener('pointerdown',()=>{if(playing) pause('已暂停，可手动定位。');});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)pause('已切到后台并暂停，返回后可继续。');});
+byId('example').addEventListener('click',()=>{
+  source.value='大家好，今天我想分享一个简单的想法。\n\n开始一项任务前，先说清楚自己要解决什么问题。\n\n把目标拆成一个今天能完成的小步骤。\n\n用实际结果检查这个步骤是否有帮助。\n\n遇到不顺利的地方，先停下来观察，再调整做法。\n\n练习表达时，也可以采用同样的方法。\n\n留一点停顿，让听众有时间理解。\n\n最后，用一句话说明接下来要做的事。\n\n谢谢大家。';load();
+});
+byId('clear').addEventListener('click',()=>{pause('稿件已清空。');loaded=false;source.value=prompt.textContent='';play.disabled=topButton.disabled=true;editor.open=true;status.removeAttribute('data-error');status.textContent='已清空稿件。';source.focus();});
+</script></body></html>

@@ -298,5 +298,15 @@
     "path": "duty-roster.html",
     "category": "日常协作",
     "test": "node --test test-duty-roster.mjs"
+  },
+  {
+    "id": 31,
+    "date": "2026-11-25",
+    "slug": "teleprompter",
+    "title": "本地提词器 / Teleprompter",
+    "problem": "练习汇报或录制口播时，需要大字稿件按阅读节奏滚动，并随时暂停定位",
+    "path": "teleprompter.html",
+    "category": "日常表达",
+    "test": "node --test test-teleprompter.mjs"
   }
 ]
