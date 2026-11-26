@@ -308,5 +308,15 @@
     "path": "teleprompter.html",
     "category": "日常表达",
     "test": "node --test test-teleprompter.mjs"
+  },
+  {
+    "id": 32,
+    "date": "2026-11-26",
+    "slug": "link-qr",
+    "title": "网址二维码 / Link QR",
+    "problem": "想把电脑上的完整链接交给手机打开，需要本地生成可扫码或保存的二维码",
+    "path": "link-qr.html",
+    "category": "日常分享",
+    "test": "node --test test-link-qr.mjs"
   }
 ]

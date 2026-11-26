@@ -41,6 +41,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 029 | [收纳尺寸检查器 / Box Fit](./box-fit.html) | 检查物品旋转后的三边尺寸，算清预留空隙后的余量或缺口 | 2026-11-23 |
 | 030 | [轮值排班器 / Duty Roster](./duty-roster.html) | 按名单循环安排每日或每周轮值，核对日期、星期和各人次数 | 2026-11-24 |
 | 031 | [本地提词器 / Teleprompter](./teleprompter.html) | 以大字和可调速度滚动口播稿，暂停、继续并手动定位 | 2026-11-25 |
+| 032 | [网址二维码 / Link QR](./link-qr.html) | 将完整网址本地转为二维码，方便手机扫码或保存 PNG 分享 | 2026-11-26 |
+
+## 032 · 网址二维码
+
+**[打开网址二维码 →](https://zhongwilliam51-crypto.github.io/daily-useful-tools/link-qr.html)**
+
+想把电脑上的网页链接交给手机时，粘贴完整 HTTP 或 HTTPS 网址，点击“生成二维码”，核对二维码下方的完整网址，再用手机扫码，或下载 `link-qr.png` 分享。支持 Ctrl / ⌘ + Enter。
+
+- 只去掉输入首尾空白，二维码编码其余原文的 UTF-8 字节。保留大小写、参数顺序、重复参数、百分号编码、签名、片段及 Unicode，不使用 URL 解析后的规范化字符串替换原文。
+- 仅接受含主机名的 HTTP / HTTPS 网址。内部空白、控制字符、无效 Unicode 和内嵌用户名密码会报错；普通空格请使用 `%20`。不访问、不展开、不检查目标网站，不经过短链服务。
+- 网址最多 512 个 UTF-8 字节，原始输入最多 4,096 个 UTF-16 码元。超限不截断。中文和 emoji 通常占多个字节。
+- 复用仓库已有的 Project Nayuki 编码器，完整保留 MIT 许可，随页面内嵌。采用 UTF-8 ECI、中等纠错、四模块白边和每模块 8 像素的黑白 PNG。避免裁白边、拉伸或增加装饰；长链接较密时请放大显示并核对扫码结果。
+- 修改输入或清空立即丢弃旧二维码及下载地址，较早的 PNG 导出不会覆盖新输入。PNG 导出失败时保留二维码预览并提示原因，不把失败描述为下载成功。
+- 二维码包含完整链接；含私密参数时请像原链接一样妥善保管。全部在本地生成，不上传、不保存网址；下载页面后可离线使用，无需注册或安装依赖。
 
 ## 031 · 本地提词器
 
@@ -543,7 +557,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html` 或 `teleprompter.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html`、`teleprompter.html` 或 `link-qr.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -574,6 +588,8 @@ node --test test-*.mjs
 轮值排班器覆盖轮换顺序、跨月跨年、公历闰日、每日与每周间隔、重复姓名和日期边界，并验证 400 组安排的日期间隔、成员次数及顺序守恒。
 
 本地提词器覆盖文本保留、字号与速度范围、分数滚动累计、卡顿限幅、末尾停止，以及暂停、旧动画回调与稿件编辑隔离。
+
+网址二维码覆盖原文和 UTF-8 字节保留、协议与凭据校验、字节上限、二维码结构及白边绘制，并验证 PNG 导出失败和旧异步结果隔离。
 
 ## 每日制作原则
 
