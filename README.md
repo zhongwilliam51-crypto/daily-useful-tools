@@ -42,6 +42,19 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 030 | [轮值排班器 / Duty Roster](./duty-roster.html) | 按名单循环安排每日或每周轮值，核对日期、星期和各人次数 | 2026-11-24 |
 | 031 | [本地提词器 / Teleprompter](./teleprompter.html) | 以大字和可调速度滚动口播稿，暂停、继续并手动定位 | 2026-11-25 |
 | 032 | [网址二维码 / Link QR](./link-qr.html) | 将完整网址本地转为二维码，方便手机扫码或保存 PNG 分享 | 2026-11-26 |
+| 033 | [长图拼接器 / Image Join](./image-join.html) | 将多张截图按顺序等比例横向或纵向拼接，预览并下载 PNG | 2026-11-27 |
+
+## 033 · 长图拼接器
+
+**[打开长图拼接器](https://zhongwilliam51-crypto.github.io/daily-useful-tools/image-join.html)**
+
+选择 2–8 张图片，用“前移”“后移”核对列表顺序；选择纵向或横向、统一边长上限和间隔，点击“生成拼接图”，预览后下载 `joined-images.png`。也可以先“试用示例”。重新选择文件会替换整组图片。
+
+- 支持浏览器可解码的 PNG、JPEG 和静态 WebP，不接受 SVG 或 GIF；不保留动画。单张文件最多 10 MiB、1,600 万像素，整组最多 40 MiB、2,400 万像素。读取失败时整组不保留，已经解码的位图会释放。
+- 纵向统一宽度，横向统一高度；对应边长取设定上限与各图对应边的最小值，保持比例、不裁剪、不放大。另一边四舍五入到整数像素且至少为 1 px。上限为 100–2,400 px，图片间隔为 0–64 px 的整数。
+- 透明部分和图间空隙合成为白色。输出为 PNG，最多 1,600 万像素，任一边不超过 16,384 px；超限会提示减小设置，不自动截断。PNG 可能比原 JPEG 大；大图在低内存设备上也可能无法解码或导出，此时请先缩小图片。
+- 不识别或去除截图的重复、重叠区域。修改设置、顺序或移除图片立即清除旧结果，重新生成后才能下载。导出失败时明确提示，不提供旧文件。
+- 所有图片仅在浏览器本页处理，不上传、不保存历史；需要支持 `createImageBitmap` 和 Canvas 的浏览器。下载本页后可离线使用，无需注册或安装依赖。清空、刷新或离开会释放当前图片。
 
 ## 032 · 网址二维码
 
@@ -557,7 +570,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html`、`teleprompter.html` 或 `link-qr.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html`、`teleprompter.html` 、`link-qr.html` 或 `image-join.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -590,6 +603,8 @@ node --test test-*.mjs
 本地提词器覆盖文本保留、字号与速度范围、分数滚动累计、卡顿限幅、末尾停止，以及暂停、旧动画回调与稿件编辑隔离。
 
 网址二维码覆盖原文和 UTF-8 字节保留、协议与凭据校验、字节上限、二维码结构及白边绘制，并验证 PNG 导出失败和旧异步结果隔离。
+
+长图拼接器覆盖横纵比例、顺序和间隔、字节与像素边界、读取失败释放、300 组尺寸连续性核对，以及旧 PNG 导出隔离、列表调整和读取中清空。
 
 ## 每日制作原则
 

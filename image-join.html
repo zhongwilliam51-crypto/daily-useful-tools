@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="description" content="本地将多张截图按顺序拼成长图，支持横向、纵向、调整顺序和下载 PNG。">
+<title>长图拼接器 / Image Join · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f3ea;color:#243b31;font:16px/1.7 system-ui,-apple-system,"PingFang SC",sans-serif}main{max-width:1120px;margin:auto;padding:24px 28px}nav{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #d5dbcf;padding-bottom:20px}a{color:inherit;text-underline-offset:4px}.brand{font-weight:750}h1{font-size:clamp(34px,6vw,54px);line-height:1.2;letter-spacing:-.035em;margin:40px 0 16px}p{color:#526258}.intro{max-width:680px}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin:30px 0}.panel{background:#fffef9;border:1px solid #d5dbcf;border-radius:16px;padding:24px;min-width:0}h2{font-size:22px;margin:0 0 16px}label{display:block;font-size:14px;font-weight:650;margin:16px 0 6px}input,select,button,.download{font:inherit;min-height:44px;border:1px solid #b7c2b3;border-radius:8px}input,select{width:100%;padding:10px;background:#fff;color:inherit}select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#243b31 50%),linear-gradient(135deg,#243b31 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}button,.download{padding:9px 15px;background:#fffef9;color:inherit;cursor:pointer}button.primary,.download{background:#243b31;color:white;border-color:#243b31}.download{display:inline-block;text-decoration:none}button:disabled{opacity:.45;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a64526;outline-offset:3px}.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint{font-size:14px;color:#526258;margin:8px 0}.status{min-height:28px;color:#a64526;overflow-wrap:anywhere}ol{padding:0;list-style:none}.item{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;border-top:1px solid #d5dbcf;padding:14px 0}.thumb{width:64px;height:64px;object-fit:contain;background:white;border:1px solid #d5dbcf}.name{overflow-wrap:anywhere;font-size:14px}.item .row{gap:6px;margin:6px 0 0}.item button{font-size:14px;padding:6px 10px}#preview{display:block;width:auto;max-width:100%;height:auto;max-height:620px;object-fit:contain;object-position:top;margin:18px auto;border:1px solid #d5dbcf}#empty{padding:70px 16px;text-align:center;border:1px dashed #b7c2b3;border-radius:12px}footer{border-top:1px solid #d5dbcf;margin-top:30px;padding:20px 0;font-size:14px;color:#526258}[hidden]{display:none!important}@media(max-width:720px){main{padding:18px}.layout{grid-template-columns:1fr}.panel{padding:18px}nav{font-size:14px}h1{margin-top:30px}}
+</style>
+</head>
+<body><main>
+<nav><a class="brand" href="./index.html">Daily Useful Tools</a><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub</a></nav>
+<h1>把几张截图，拼成一张。</h1><p class="intro">笔记、步骤说明或几张相关截图，按你的顺序放在一起。等比例缩小，不裁剪、不放大，透明部分和间隔统一为白色。</p>
+<div class="layout"><section class="panel"><h2>选择并排列图片</h2>
+<label for="files">选择图片（替换当前列表）</label><input id="files" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+<p class="hint">2–8 张 PNG、JPEG 或静态 WebP。单张最多 10 MiB / 1,600 万像素，整组最多 40 MiB / 2,400 万像素。</p>
+<div class="row"><button id="example" type="button">试用示例</button><button id="clear" type="button">清空</button></div>
+<ol id="images" aria-label="图片顺序"></ol>
+<label for="direction">拼接方向</label><select id="direction"><option value="vertical">纵向：从上到下</option><option value="horizontal">横向：从左到右</option></select>
+<div class="fields"><div><label for="side" id="side-label">统一宽度上限（px）</label><input id="side" type="number" min="100" max="2400" step="1" value="800"></div><div><label for="gap">图片间隔（px）</label><input id="gap" type="number" min="0" max="64" step="1" value="12"></div></div>
+<p class="hint">纵向统一宽度，横向统一高度；实际取上限与各图对应边的最小值。输出最多 1,600 万像素，任一边不超过 16,384 px；超限时请减小上限。</p>
+<div class="row"><button class="primary" id="generate" type="button" disabled>生成拼接图</button></div>
+</section><section class="panel"><h2>预览与下载</h2><p id="status" class="status" role="status" aria-live="polite">选择图片，或先试用示例。</p><div id="empty">拼接完成后在这里预览</div><canvas id="preview" width="1" height="1" hidden aria-label="拼接图片预览"></canvas><p id="details" class="hint"></p><a id="download" class="download" download="joined-images.png" hidden>下载 PNG</a><p class="hint">修改顺序或设置后，请重新生成。不会自动去除重复内容或重叠区域，也不保留动画；浏览器不支持的图片会提示错误。</p></section></div>
+<footer>所有图片仅在本页内处理，不上传、不保存历史。下载本页后可离线使用；刷新或清空会丢弃当前图片。导出的 PNG 可能比原 JPEG 更大。</footer>
+</main>
+<script id="image-join-core">
+const JOIN_LIMITS = Object.freeze({count:8, file:10*1024*1024, bytes:40*1024*1024, singlePixels:16000000, sourcePixels:24000000, pixels:16000000, edge:16384});
+function validateJoinFiles(files) {
+  if (!Array.isArray(files) || files.length<2 || files.length>JOIN_LIMITS.count) throw new Error('请选择 2–8 张图片。');
+  let bytes=0;
+  for (const file of files) {
+    if (!['image/png','image/jpeg','image/webp'].includes(file.type)) throw new Error('只接受 PNG、JPEG 或 WebP 图片。');
+    if (!Number.isSafeInteger(file.size) || file.size<1 || file.size>JOIN_LIMITS.file) throw new Error('单张文件须大于 0 且不超过 10 MiB。');
+    bytes+=file.size;
+  }
+  if(bytes>JOIN_LIMITS.bytes) throw new Error('整组文件不能超过 40 MiB。');
+}
+function validateJoinDimensions(images) {
+  if(!Array.isArray(images) || images.length<2 || images.length>8) throw new Error('请选择 2–8 张图片。');
+  let total=0;
+  for(const image of images) {
+    const {width,height}=image;
+    if(!Number.isSafeInteger(width)||!Number.isSafeInteger(height)||width<1||height<1||width*height>JOIN_LIMITS.singlePixels) throw new Error('单张图片尺寸无效或超过 1,600 万像素。');
+    total+=width*height;
+  }
+  if(total>JOIN_LIMITS.sourcePixels) throw new Error('整组图片不能超过 2,400 万像素。');
+}
+async function loadJoinImages(files,decode) {
+  validateJoinFiles(files);
+  const result=[];
+  try {
+    for(const file of files) {
+      const bitmap=await decode(file);
+      result.push({name:file.name,bitmap,width:bitmap.width,height:bitmap.height});
+      // Check progressively, before decoding the next file.
+      const last=result[result.length-1];
+      if(!Number.isSafeInteger(last.width)||!Number.isSafeInteger(last.height)||last.width<1||last.height<1||last.width*last.height>JOIN_LIMITS.singlePixels) throw new Error('单张图片尺寸无效或超过 1,600 万像素。');
+      if(result.reduce((sum,i)=>sum+i.width*i.height,0)>JOIN_LIMITS.sourcePixels) throw new Error('整组图片不能超过 2,400 万像素。');
+    }
+    return result;
+  } catch(error) {
+    for(const image of result) image.bitmap.close();
+    throw error;
+  }
+}
+function joinInteger(value,min,max,label) {
+  if(!/^\d+$/.test(String(value)) || !Number.isSafeInteger(Number(value)) || Number(value)<min || Number(value)>max) throw new Error(label+'须为 '+min+'–'+max+' 的整数。');
+  return Number(value);
+}
+function planImageJoin(images,direction,side,gap) {
+  validateJoinDimensions(images);
+  if(!['vertical','horizontal'].includes(direction)) throw new Error('拼接方向无效。');
+  side=joinInteger(side,100,2400,'统一边长上限');gap=joinInteger(gap,0,64,'图片间隔');
+  const vertical=direction==='vertical';
+  const common=Math.min(side,...images.map(i=>vertical?i.width:i.height));
+  let offset=0;
+  const boxes=images.map(image=>{
+    const width=vertical?common:Math.max(1,Math.round(image.width*common/image.height));
+    const height=vertical?Math.max(1,Math.round(image.height*common/image.width)):common;
+    const box={x:vertical?0:offset,y:vertical?offset:0,width,height};
+    offset+=(vertical?height:width)+gap;
+    return box;
+  });
+  const width=vertical?common:offset-gap,height=vertical?offset-gap:common;
+  if(width>JOIN_LIMITS.edge||height>JOIN_LIMITS.edge||width*height>JOIN_LIMITS.pixels) throw new Error('输出尺寸超限，请减小统一边长上限或间隔。');
+  return {width,height,common,boxes};
+}
+function paintImageJoin(canvas,images,plan) {
+  canvas.width=plan.width;canvas.height=plan.height;
+  const ctx=canvas.getContext('2d');
+  if(!ctx) throw new Error('浏览器无法创建 Canvas，请换用支持的浏览器。');
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,plan.width,plan.height);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  images.forEach((image,i)=>{const b=plan.boxes[i];ctx.drawImage(image.bitmap,b.x,b.y,b.width,b.height);});
+}
+</script>
+<script id="image-join-ui">
+const el=id=>document.getElementById(id);
+let images=[],loadVersion=0,outputVersion=0,outputURL='',loading=false;
+function message(text){el('status').textContent=text;}
+function invalidate(){
+  outputVersion++;
+  if(outputURL) URL.revokeObjectURL(outputURL);
+  outputURL='';el('download').hidden=true;el('download').removeAttribute('href');
+  el('preview').hidden=true;el('preview').width=1;el('preview').height=1;
+  el('empty').hidden=false;el('details').textContent='';
+  el('generate').disabled=loading||images.length<2;
+}
+function release(list){for(const image of list) image.bitmap.close();}
+function renderList(){
+  el('images').replaceChildren();
+  images.forEach((image,index)=>{
+    const item=document.createElement('li');item.className='item';
+    const thumb=document.createElement('canvas');thumb.className='thumb';thumb.width=64;thumb.height=64;
+    const ctx=thumb.getContext('2d');const ratio=Math.min(64/image.width,64/image.height);
+    if(ctx)ctx.drawImage(image.bitmap,0,0,image.width*ratio,image.height*ratio);
+    thumb.setAttribute('aria-label','图片 '+(index+1)+' 缩略图');
+    const content=document.createElement('div'),name=document.createElement('div');name.className='name';
+    name.textContent=(index+1)+'. '+image.name+' · '+image.width+' × '+image.height;
+    const controls=document.createElement('div');controls.className='row';
+    for(const [label,delta] of [['前移',-1],['后移',1],['移除',0]]){
+      const button=document.createElement('button');button.type='button';button.textContent=label;
+      button.setAttribute('aria-label',label+'第 '+(index+1)+' 张图片');
+      button.disabled=delta===-1&&index===0||delta===1&&index===images.length-1;
+      button.addEventListener('click',()=>{
+        invalidate();
+        if(delta===0){image.bitmap.close();images.splice(index,1);}else [images[index],images[index+delta]]=[images[index+delta],images[index]];
+        renderList();el('generate').disabled=loading||images.length<2;message('图片顺序已更新，请重新生成。');
+      });
+      controls.append(button);
+    }
+    content.append(name,controls);item.append(thumb,content);el('images').append(item);
+  });
+}
+function setLoading(value){loading=value;el('files').disabled=value;el('example').disabled=value;el('generate').disabled=value||images.length<2;}
+async function choose(files){
+  const version=++loadVersion;invalidate();release(images);images=[];renderList();setLoading(true);message('正在本地读取图片…');
+  try{
+    if(typeof createImageBitmap!=='function')throw new Error('浏览器不支持图片解码，请使用新版浏览器。');
+    const loaded=await loadJoinImages(files,file=>createImageBitmap(file));
+    if(version!==loadVersion){release(loaded);return;}
+    images=loaded;renderList();message('已读取 '+images.length+' 张图片。核对顺序后生成。');
+  }catch(error){if(version===loadVersion)message('读取失败：'+error.message);}
+  finally{if(version===loadVersion)setLoading(false);}
+}
+el('files').addEventListener('change',()=>{const files=Array.from(el('files').files);el('files').value='';choose(files);});
+el('clear').addEventListener('click',()=>{loadVersion++;release(images);images=[];setLoading(false);invalidate();renderList();el('files').value='';message('已清空图片与结果。');});
+for(const id of ['direction','side','gap'])el(id).addEventListener('input',()=>{
+  invalidate();el('side-label').textContent=el('direction').value==='vertical'?'统一宽度上限（px）':'统一高度上限（px）';message('设置已修改，请重新生成。');
+});
+el('generate').addEventListener('click',()=>{
+  invalidate();const version=outputVersion;
+  try{
+    const plan=planImageJoin(images,el('direction').value,el('side').value,el('gap').value);
+    paintImageJoin(el('preview'),images,plan);el('preview').hidden=false;el('empty').hidden=true;
+    el('details').textContent=images.length+' 张图片 · '+plan.width+' × '+plan.height+' px · 白色背景';
+    el('generate').disabled=true;message('正在生成 PNG…');
+    el('preview').toBlob(blob=>{
+      if(version!==outputVersion)return;
+      el('generate').disabled=images.length<2;
+      if(!blob){message('PNG 导出失败，请减小图片尺寸后重试。');return;}
+      try{outputURL=URL.createObjectURL(blob);el('download').href=outputURL;el('download').hidden=false;message('拼接完成，可下载 PNG。');}
+      catch{message('无法准备下载，请减小图片尺寸后重试。');}
+    },'image/png');
+  }catch(error){el('generate').disabled=loading||images.length<2;message(error.message);}
+});
+el('example').addEventListener('click',async()=>{
+  const version=++loadVersion;setLoading(true);invalidate();message('正在准备示例…');
+  try{
+    const files=[];
+    for(const [index,height,color,title] of [[1,300,'#e2eadb','周末散步计划'],[2,240,'#f0d9c7','带上水与相机']]){
+      const canvas=document.createElement('canvas');canvas.width=600;canvas.height=height;const ctx=canvas.getContext('2d');
+      if(!ctx)throw new Error('浏览器无法创建 Canvas。');
+      ctx.fillStyle=color;ctx.fillRect(0,0,600,height);ctx.fillStyle='#243b31';ctx.font='bold 32px sans-serif';ctx.fillText(title,36,78);ctx.font='22px sans-serif';ctx.fillText(index===1?'上午 09:00 · 河边集合':'走累了，就找个地方休息。',36,130);
+      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('示例生成失败。');
+      files.push(new File([blob],'示例-'+index+'.png',{type:'image/png'}));
+    }
+    if(version===loadVersion)await choose(files);
+  }catch(error){if(version===loadVersion){setLoading(false);message(error.message);}}
+});
+window.addEventListener('pagehide',()=>{loadVersion++;release(images);images=[];setLoading(false);invalidate();renderList();message('当前图片已释放，请重新选择。');});
+</script>
+</body></html>

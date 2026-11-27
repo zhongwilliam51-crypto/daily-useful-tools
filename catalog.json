@@ -318,5 +318,15 @@
     "path": "link-qr.html",
     "category": "日常分享",
     "test": "node --test test-link-qr.mjs"
+  },
+  {
+    "id": 33,
+    "date": "2026-11-27",
+    "slug": "image-join",
+    "title": "长图拼接器 / Image Join",
+    "problem": "分享多张截图或步骤说明时，需要按顺序合成一张便于阅读和发送的图片",
+    "path": "image-join.html",
+    "category": "日常图片",
+    "test": "node --test test-image-join.mjs"
   }
 ]
