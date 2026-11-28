@@ -328,5 +328,15 @@
     "path": "image-join.html",
     "category": "日常图片",
     "test": "node --test test-image-join.mjs"
+  },
+  {
+    "id": 34,
+    "date": "2026-11-28",
+    "slug": "stage-timer",
+    "title": "分段倒计时器 / Stage Timer",
+    "problem": "练习汇报或分步任务时，需要按顺序控制每个阶段的时长并能暂停继续",
+    "path": "stage-timer.html",
+    "category": "日常时间",
+    "test": "node --test test-stage-timer.mjs"
   }
 ]

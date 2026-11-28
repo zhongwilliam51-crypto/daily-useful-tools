@@ -43,6 +43,20 @@ Small, practical tools for real-life problems. Open source. No sign-up.
 | 031 | [本地提词器 / Teleprompter](./teleprompter.html) | 以大字和可调速度滚动口播稿，暂停、继续并手动定位 | 2026-11-25 |
 | 032 | [网址二维码 / Link QR](./link-qr.html) | 将完整网址本地转为二维码，方便手机扫码或保存 PNG 分享 | 2026-11-26 |
 | 033 | [长图拼接器 / Image Join](./image-join.html) | 将多张截图按顺序等比例横向或纵向拼接，预览并下载 PNG | 2026-11-27 |
+| 034 | [分段倒计时器 / Stage Timer](./stage-timer.html) | 按顺序控制汇报或任务各阶段时长，支持暂停、继续和后台进度校正 | 2026-11-28 |
+
+## 034 · 分段倒计时器
+
+**[打开分段倒计时器](https://zhongwilliam51-crypto.github.io/daily-useful-tools/stage-timer.html)**
+
+每行输入“阶段名称 | 秒数”，例如 `开场 | 60`、`主要内容 | 180`、`总结 | 60`。点击“开始”，按顺序自动进入下一阶段；“暂停”保留当前进度，“继续”接着计时。右侧显示当前阶段、阶段剩余时间、总剩余时间和完整安排。
+
+- 2–12 个阶段，每段 1–3,600 秒，全部最多 14,400 秒（4 小时）。秒数只接受十进制整数，不接受小数或单位后缀；使用半角竖线 `|`。空行忽略，同名阶段按原顺序分别计时。
+- 名称去除首尾空白后须为 1–40 个 Unicode 码点，支持中文与 emoji，不接受控制字符、方向控制字符或无效 Unicode。输入上限为 6,000 个 UTF-16 码元；格式错误明确指出行号，不截断内容。
+- 剩余时间按“分:秒”显示，不足一秒向上取整；在阶段边界准确切换，全部结束后停止调度。回调延迟不会按次数累计误差，而是根据设备时间校正；手动修改设备时钟会影响计时，时间倒退时不会增加已用时长。
+- 暂停期间的时间不计入进度。修改输入会清除当前计时；“重置”保留安排文字并回到未开始；“重新开始”从第一阶段开始。“恢复示例”会替换当前文字并重置。
+- 本工具**没有提示音、系统通知或唤醒功能**，适合看屏练习。页面隐藏时停止刷新显示，切回时按经过时间校正；锁屏或设备休眠时不会唤醒或提示。需要可靠提醒时请使用设备自带闹钟。
+- 仅在当前页面内运行，不上传、不保存安排，无注册、外部资源或依赖。下载本页后可离线使用；刷新或关闭页面会丢失当前进度。
 
 ## 033 · 长图拼接器
 
@@ -570,7 +584,7 @@ https://example.com/article?id=42#read
 
 ## 本地使用 / Use offline
 
-下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html`、`teleprompter.html` 、`link-qr.html` 或 `image-join.html`，即可直接使用；无需安装依赖。
+下载本仓库后，双击 `index.html`、`link-cleaner.html`、`unit-price.html`、`list-cleaner.html`、`bill-split.html`、`image-shrink.html`、`recipe-scale.html`、`date-offset.html`、`random-groups.html`、`time-total.html`、`transfer-time.html`、`list-compare.html`、`file-checksum.html`、`calendar-event.html`、`wifi-qr.html`、`leave-plan.html`、`contact-card.html`、`text-limit.html`、`print-scale.html`、`table-markdown.html`、`shared-free-time.html`、`appliance-energy.html`、`hong-kong-time.html`、`cart-threshold.html`、`print-pages.html`、`group-settle.html`、`unwrap-text.html`、`subtitle-shift.html`、`text-diff.html`、`box-fit.html`、`duty-roster.html`、`teleprompter.html` 、`link-qr.html` 、`image-join.html` 或 `stage-timer.html`，即可直接使用；无需安装依赖。
 
 也可以用静态服务器预览：
 
@@ -605,6 +619,8 @@ node --test test-*.mjs
 网址二维码覆盖原文和 UTF-8 字节保留、协议与凭据校验、字节上限、二维码结构及白边绘制，并验证 PNG 导出失败和旧异步结果隔离。
 
 长图拼接器覆盖横纵比例、顺序和间隔、字节与像素边界、读取失败释放、300 组尺寸连续性核对，以及旧 PNG 导出隔离、列表调整和读取中清空。
+
+分段倒计时器覆盖阶段格式和时长边界、Unicode 名称、准确切换、回调延迟、暂停与时钟倒退，并验证 400 组时间线、旧回调隔离和后台返回校正。
 
 ## 每日制作原则
 

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="description" content="为汇报、练习或分步任务设置多个倒计时阶段，本地自动切换，支持暂停和继续。">
+<title>分段倒计时器 / Stage Timer · Daily Useful Tools</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f3ea;color:#243b31;font:16px/1.7 system-ui,-apple-system,"PingFang SC",sans-serif}main{max-width:1120px;margin:auto;padding:24px 28px}nav{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #d5dbcf;padding-bottom:20px}a{color:inherit;text-underline-offset:4px}.brand{font-weight:750}h1{font-size:clamp(34px,6vw,54px);line-height:1.2;letter-spacing:-.035em;margin:40px 0 16px}p{color:#526258}.intro{max-width:680px}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin:30px 0}.panel{background:#fffef9;border:1px solid #d5dbcf;border-radius:16px;padding:24px;min-width:0}h2{font-size:22px;margin:0 0 16px}label{display:block;font-size:14px;font-weight:650;margin:16px 0 6px}textarea,button{font:inherit;min-height:44px;border:1px solid #b7c2b3;border-radius:8px}textarea{width:100%;padding:12px;background:#fff;color:inherit;resize:vertical;line-height:1.8;min-height:220px}button{padding:9px 18px;background:#fffef9;color:inherit;cursor:pointer}button.primary{background:#243b31;color:white;border-color:#243b31}button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid #a64526;outline-offset:3px}.row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.hint{font-size:14px;color:#526258;margin:8px 0}.status{min-height:28px;color:#a64526;overflow-wrap:anywhere}.display{text-align:center;padding:22px 0}.phase{font-size:24px;font-weight:700;overflow-wrap:anywhere}.clock{font-size:clamp(56px,8vw,88px);font-weight:750;line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:-.04em;margin:16px 0}.total{font-size:14px;color:#526258}progress{display:block;width:100%;height:12px;accent-color:#243b31;margin:20px 0}ol{list-style:none;padding:0;margin:24px 0 0}.step{display:flex;justify-content:space-between;gap:16px;padding:12px;border-top:1px solid #d5dbcf;font-size:14px}.step span:first-child{overflow-wrap:anywhere;min-width:0}.step span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}.current{background:#e2eadb;font-weight:700;border-radius:8px}.finished{color:#526258}.finished span:first-child::before{content:'已完成 · '}footer{border-top:1px solid #d5dbcf;margin-top:30px;padding:20px 0;font-size:14px;color:#526258}@media(max-width:720px){main{padding:18px}.layout{grid-template-columns:1fr}.panel{padding:18px}nav{font-size:14px}h1{margin-top:30px}}
+</style></head>
+<body><main>
+<nav><a class="brand" href="./index.html">Daily Useful Tools</a><a href="https://github.com/zhongwilliam51-crypto/daily-useful-tools">GitHub</a></nav>
+<h1>给每一段，留好时间。</h1><p class="intro">练习汇报时，开场别太久，总结别太赶。把任务拆成几个阶段，按顺序自动倒计时，暂停后也能接着来。</p>
+<div class="layout"><section class="panel"><h2>安排阶段</h2>
+<label for="stages">每行：阶段名称 | 秒数</label><textarea id="stages" rows="7" maxlength="6000" spellcheck="false">开场 | 60
+主要内容 | 180
+总结 | 60</textarea>
+<p class="hint">使用半角竖线 | 分隔，2–12 个阶段；每段 1–3,600 秒，总时长最多 4 小时。名称最多 40 字，空行会忽略。</p>
+<div class="row"><button id="toggle" class="primary" type="button">开始</button><button id="reset" type="button">重置</button><button id="example" type="button">恢复示例</button></div>
+<p class="hint">修改安排会清除当前进度。重置会保留文字，重新开始会从第一阶段计时。</p>
+<p id="status" class="status" role="status" aria-live="polite">安排好阶段后，点击开始。</p>
+</section><section class="panel"><h2>当前倒计时</h2>
+<div class="display"><div id="phase" class="phase">准备好就开始</div><div id="clock" class="clock" role="timer" aria-live="off" aria-label="当前阶段剩余时间，分和秒">00:00</div><div id="position" class="total">按阶段顺序自动切换</div></div>
+<progress id="progress" value="0" max="1000" aria-label="全部阶段完成进度"></progress>
+<p id="total" class="hint">开始后显示总剩余时间和完整安排。</p><ol id="plan" aria-label="阶段安排"></ol>
+<p class="hint">本工具没有提示音或系统通知，请保持页面可见以查看进度。切回页面会按经过的时间校正；锁屏或休眠时不会唤醒设备。</p>
+</section></div>
+<footer>全部在本页内计时，不上传、不保存安排。刷新会丢失进度；下载本页后可离线使用，无需注册或安装依赖。</footer>
+</main>
+<script id="stage-timer-core">
+function parseTimerStages(source) {
+  if(typeof source!=='string'||source.length>6000)throw new Error('安排文字不能超过 6,000 个码元。');
+  const rows=source.split(/\r\n|\r|\n/).map((text,index)=>({text:text.trim(),line:index+1})).filter(row=>row.text);
+  if(rows.length<2||rows.length>12)throw new Error('请填写 2–12 个阶段。');
+  const steps=rows.map(row=>{
+    const parts=row.text.split('|');
+    if(parts.length!==2)throw new Error('第 '+row.line+' 行请使用“名称 | 秒数”格式。');
+    const name=parts[0].trim(),seconds=parts[1].trim();
+    if(!name||Array.from(name).length>40||/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u.test(name)||/[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/u.test(name))throw new Error('第 '+row.line+' 行名称须为 1–40 字，不能含控制字符。');
+    if(!/^\d{1,4}$/.test(seconds)||Number(seconds)<1||Number(seconds)>3600)throw new Error('第 '+row.line+' 行秒数须为 1–3,600 的整数。');
+    return {name,durationMs:Number(seconds)*1000};
+  });
+  if(steps.reduce((sum,step)=>sum+step.durationMs,0)>14400000)throw new Error('总时长不能超过 4 小时。');
+  return steps;
+}
+function timerNow(now){if(!Number.isFinite(now)||now<0)throw new Error('设备时间无效。');return now;}
+function createStageTimer(steps,now){
+  timerNow(now);
+  if(!Array.isArray(steps)||steps.length<2||steps.length>12||steps.some(s=>typeof s.name!=='string'||!Number.isSafeInteger(s.durationMs)||s.durationMs<1000||s.durationMs>3600000))throw new Error('阶段安排无效。');
+  const totalMs=steps.reduce((sum,s)=>sum+s.durationMs,0);
+  if(totalMs>14400000)throw new Error('总时长不能超过 4 小时。');
+  return {steps:steps.map(s=>({...s})),totalMs,elapsedMs:0,mark:now,mode:'running'};
+}
+function tickStageTimer(state,now){
+  timerNow(now);if(state.mode!=='running')return state;
+  const elapsedMs=Math.min(state.totalMs,state.elapsedMs+Math.max(0,now-state.mark));
+  return {...state,mark:Math.max(state.mark,now),elapsedMs,mode:elapsedMs===state.totalMs?'done':'running'};
+}
+function pauseStageTimer(state,now){const next=tickStageTimer(state,now);return next.mode==='running'?{...next,mode:'paused'}:next;}
+function resumeStageTimer(state,now){timerNow(now);return state.mode==='paused'?{...state,mark:now,mode:'running'}:state;}
+function stageTimerView(state){
+  let start=0,index=state.steps.length-1;
+  for(let i=0;i<state.steps.length;i++){
+    if(state.elapsedMs<start+state.steps[i].durationMs){index=i;break;}
+    start+=state.steps[i].durationMs;
+  }
+  return {index,phaseRemainingMs:state.mode==='done'?0:start+state.steps[index].durationMs-state.elapsedMs,totalRemainingMs:state.totalMs-state.elapsedMs,progress:Math.floor(state.elapsedMs/state.totalMs*1000)};
+}
+function formatStageTime(ms){
+  if(!Number.isFinite(ms)||ms<0)throw new Error('剩余时间无效。');
+  const seconds=Math.ceil(ms/1000);return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+}
+</script>
+<script id="stage-timer-ui">
+const el=id=>document.getElementById(id),baseTitle=document.title;
+let state=null,pending=null,generation=0;
+function stopTick(){generation++;if(pending!==null)clearTimeout(pending);pending=null;}
+function message(text){if(el('status').textContent!==text)el('status').textContent=text;}
+function clearTimer(text){
+  stopTick();state=null;el('toggle').textContent='开始';el('phase').textContent='准备好就开始';el('clock').textContent='00:00';el('position').textContent='按阶段顺序自动切换';el('progress').value=0;el('total').textContent='开始后显示总剩余时间和完整安排。';el('plan').replaceChildren();document.title=baseTitle;message(text);
+}
+function renderTimer(){
+  if(!state)return;
+  const view=stageTimerView(state),done=state.mode==='done',paused=state.mode==='paused';
+  el('toggle').textContent=done?'重新开始':paused?'继续':'暂停';
+  el('phase').textContent=done?'全部完成':state.steps[view.index].name;
+  el('clock').textContent=formatStageTime(view.phaseRemainingMs);
+  el('position').textContent=done?'所有阶段都已结束':(paused?'已暂停 · ':'')+'第 '+(view.index+1)+' / '+state.steps.length+' 阶段';
+  el('progress').value=view.progress;el('total').textContent='总剩余 '+formatStageTime(view.totalRemainingMs)+' · 原定 '+formatStageTime(state.totalMs)+'（分:秒）';
+  const rows=Array.from(el('plan').children);
+  rows.forEach((row,index)=>{row.className='step'+(done||index<view.index?' finished':index===view.index?' current':'');if(!done&&index===view.index)row.setAttribute('aria-current','step');else row.removeAttribute('aria-current');});
+  document.title=(done?'已完成':paused?'已暂停':formatStageTime(view.phaseRemainingMs)+' · '+state.steps[view.index].name)+' · 分段倒计时';
+  message(done?'全部阶段已完成。':paused?'计时已暂停，点击继续。':'正在计时：'+state.steps[view.index].name+'。');
+}
+function buildPlan(){
+  el('plan').replaceChildren();
+  state.steps.forEach((step,index)=>{const row=document.createElement('li'),name=document.createElement('span'),duration=document.createElement('span');name.textContent=(index+1)+'. '+step.name;duration.textContent=formatStageTime(step.durationMs);row.append(name,duration);el('plan').append(row);});
+}
+function scheduleTick(){
+  stopTick();if(!state||state.mode!=='running'||document.hidden)return;
+  const token=generation;
+  pending=setTimeout(()=>{if(token!==generation||!state)return;pending=null;state=tickStageTimer(state,Date.now());renderTimer();scheduleTick();},200);
+}
+el('toggle').addEventListener('click',()=>{
+  stopTick();
+  try{
+    const now=Date.now();
+    if(!state||state.mode==='done'){state=createStageTimer(parseTimerStages(el('stages').value),now);buildPlan();}
+    else if(state.mode==='running')state=pauseStageTimer(state,now);
+    else state=resumeStageTimer(state,now);
+    renderTimer();scheduleTick();
+  }catch(error){clearTimer(error.message);}
+});
+el('reset').addEventListener('click',()=>clearTimer('已重置，安排文字保留。'));
+el('stages').addEventListener('input',()=>clearTimer('安排已修改，点击开始从第一阶段计时。'));
+el('example').addEventListener('click',()=>{el('stages').value='开场 | 60\n主要内容 | 180\n总结 | 60';clearTimer('示例已恢复，点击开始。');});
+function synchronize(){stopTick();if(state){state=tickStageTimer(state,Date.now());renderTimer();scheduleTick();}}
+document.addEventListener('visibilitychange',synchronize);
+window.addEventListener('pagehide',stopTick);
+window.addEventListener('pageshow',event=>{if(event.persisted)synchronize();});
+</script>
+</body></html>
